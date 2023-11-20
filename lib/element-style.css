@@ -36,6 +36,11 @@ th {
 }
 
 
+#intertemporalQuestionContent {
+    color: #7f858f; 
+    font-family: sans-serif; 
+}
+
 #optionADiv {
     display: flex;
 }

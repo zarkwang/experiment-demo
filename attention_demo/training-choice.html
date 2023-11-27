@@ -1,0 +1,130 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <!-- Content will be created by Javascript -->
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+        <button id="confirmButton">Confirm</button>
+    </div>
+
+    <script type="module">
+
+        import { practiceStimuli,rand,loadStimuli } from "./stimuli-timeline.js";
+        const participant_ID = 1;
+            
+        var currentIndex = 0; 
+        var data = [];
+        var correctOption, wrongOption_1, wrongOption_2, optionOrder, endIteration, newData;
+
+
+        function loadPage(index) {
+
+            let configQuestion = practiceStimuli[index];
+            let frontAmount = configQuestion.front_amount;
+            let backAmount = configQuestion.backend_amount;
+            let seqLength = configQuestion.seq_length;
+            let condition = configQuestion.condition;
+
+            let addCheckQuestion = `
+                <div id="comprehension-check"></div>
+            `
+            let practiceChoicePage = intertemporalChoicePage + addCheckQuestion;
+
+            $('#content-container').html(practiceChoicePage);
+            $("#intertemporalQuestionContent").html(intertemporalQuestionText);
+            
+            generatePriceList(frontAmount, backAmount, seqLength, condition);
+            hideRowsInitial();
+            $('#confirmButton').hide();
+            console.log(data);
+        };
+
+        function addCheckQuestion(frontAmount,backAmount,seqLength,condition,indiffPoint){
+
+            var currentCond = condition === 'front-align'?'today':seqLength;
+            
+            correctOption = choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,currentCond);
+            wrongOption_1 = choiceMeaning(frontAmount+500,backAmount+500,seqLength,indiffPoint,currentCond);
+            wrongOption_2 = choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint+100,currentCond);
+            optionOrder = rand(3,3,participant_ID*888);
+
+            var options = [correctOption,wrongOption_1,wrongOption_2];
+
+            var comprehensionQuestion = `
+                <div id='error-confirm' class='error-message'></div>
+                <p>${comprehensionQuestionText}</p>
+    
+                <input type="radio" name="comprehension" id="comprehend_1" value="${options[optionOrder[0]]}">
+                <label for="comprehend_1">I ${options[optionOrder[0]]}</label><br>
+                
+                <input type="radio" name="comprehension" id="comprehend_2" value="${options[optionOrder[1]]}">
+                <label for="comprehend_2">I ${options[optionOrder[1]]}</label><br>
+
+                <input type="radio" name="comprehension" id="comprehend_3" value="${options[optionOrder[2]]}">
+                <label for="comprehend_3">I ${options[optionOrder[2]]}</label><br>
+                `
+            return(comprehensionQuestion);
+        }
+
+        
+        $('#nextButton').on('click', function () {
+
+            endIteration = (currentIndex + 1) === practiceStimuli.length;
+            newData = practiceStimuli[currentIndex];
+
+            let allChoicesChecked = true;
+
+            for (let x = 0; x <= maxRowNumber; x++) {
+                const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
+                if (!choiceChecked) {
+                    allChoicesChecked = false;
+                    $('#error-intertemporal').html(error_intertemporalChoice);
+                break; 
+                } 
+            }
+
+            if(allChoicesChecked){
+                newData["indiff_point"] = parseInt($("#switchRow").html());
+                
+                let comprehensionCheckContent = addCheckQuestion(newData.front_amount,newData.backend_amount,
+                                                                newData.seq_length,newData.condition,
+                                                                newData.indiff_point);
+                
+                $('#comprehension-check').html(comprehensionCheckContent);
+                $('#confirmButton').show();
+                $('input[name^="choice_"]').prop('disabled', true);
+            }
+        });
+
+        $('#confirmButton').on('click',function(){
+            let confirmValue = $('input[name="comprehension"]:checked').val();
+            if(!confirmValue){
+                $('#error-confirm').html(error_confirmCheck);
+            } else { 
+                var selectedValue = $('input[name="comprehension"]:checked').val();
+                newData['correct'] = selectedValue === correctOption;
+                data.push(newData);
+                
+                if(!endIteration){
+                    currentIndex++;
+                    loadPage(currentIndex);
+                } else if(endIteration){
+                    jatos.startNextComponent(data);
+                }
+            }
+        });  
+
+        loadPage(currentIndex);
+    </script>
+</body>
+</html>

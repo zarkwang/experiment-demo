@@ -1,0 +1,116 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <!-- Content will be created by Javascript -->
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script type="module">
+
+        import { stimuliContext,drawStimuli,loadStimuli } from "./stimuli-timeline.js";
+        const participant_ID = 1;
+            
+        let stimuliFront =  drawStimuli(stimuliContext.stimuli_frontAlign,
+                                        stimuliContext.nFrontAlign,
+                                        participant_ID*888);
+        let stimuliBack =  drawStimuli(stimuliContext.stimuli_backAlign,
+                                        stimuliContext.nBackAlign,
+                                        participant_ID*888);
+        const stimuli = stimuliFront.concat(stimuliBack);
+        
+        var currentIndex = 0; 
+        var pageName;
+        var data = [];
+
+
+        function loadPage(index) {
+
+            let configQuestion = loadStimuli(stimuli,index);
+            let frontAmount = configQuestion.front_amount;
+            let backAmount = configQuestion.backend_amount;
+            let seqLength = configQuestion.seq_length;
+            let condition = configQuestion.condition;
+            pageName = pageIteration[index % 2];
+
+            if(pageName === "intertemporal-choice"){
+                $('#content-container').html(intertemporalChoicePage);
+                $("#intertemporalQuestionContent").html(intertemporalQuestionText);
+                
+                generatePriceList(frontAmount, backAmount, seqLength, condition);
+                hideRowsInitial();
+            } else if (pageName === "confidence-check"){
+
+                var indiffPoint = data[data.length-1].indiff_point;
+                var currentCond = condition === 'front-align'?'today':seqLength;
+                var questionText = confidenceQuestionText + 
+                        choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,currentCond) + `?`;
+
+                $('#content-container').html(confidenceCheckPage);
+                generateConfidenceQuestion(questionText);
+
+                // $(document).keydown(function(event){
+                //     let confidenceValue = $('input[name="confidenceLevel"]:checked').val();
+                //     console.log(`Confidence Level: ${confidenceValue}`);
+                // });
+            }
+        };
+
+        
+        $('#nextButton').on('click', function () {
+
+            let endIteration = (currentIndex + 1) / pageIteration.length === stimuli.length;
+            let newData = endIteration?"":loadStimuli(stimuli,currentIndex);
+
+            if(pageName === "intertemporal-choice"){
+                let allChoicesChecked = true;
+
+                for (let x = 0; x <= maxRowNumber; x++) {
+                    const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
+                    if (!choiceChecked) {
+                        allChoicesChecked = false;
+                        $('#error-intertemporal').html(error_intertemporalChoice);
+                    break; 
+                    } 
+                }
+
+                if(allChoicesChecked){
+                    newData["indiff_point"] = parseInt($("#switchRow").html());
+                    data.push(newData);
+                    currentIndex++;
+                    loadPage(currentIndex);
+                }
+            } else 
+            if (pageName === "confidence-check"){
+                let confidenceValue = $('input[name="confidenceLevel"]:checked').val();
+                if(!confidenceValue){
+                    $('#error-confidence').html(error_confirmCheck);
+                } else {
+                    data[data.length-1]["confidence"] = confidenceValue;
+
+                    if (!endIteration){
+                        console.log(data);
+                        currentIndex++;
+                        loadPage(currentIndex);
+                    } else {
+                        jatos.startNextComponent(data);
+                    }
+                }
+            }
+
+        });
+
+        loadPage(currentIndex);
+    </script>
+</body>
+</html>

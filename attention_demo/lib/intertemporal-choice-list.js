@@ -1,9 +1,9 @@
 
 
 //var clickedButtonIds = [];
-const maxRowNumber = 80;
-const amountBreak = 5;
-const toggleRowNumber = 8;
+const maxRowNumber = 100;
+const amountBreak = 4;
+const toggleRowNumber = 10;
 
 
 // Function to generate the price list rows
@@ -65,6 +65,7 @@ function generatePriceList(frontAmount, backAmount, seqLength, condition) {
         optionBRadio.name = "choice_" + amountBreak*x;
         optionBRadio.value = "Option B";
         optionBRadio.id = "optionB_" + amountBreak*x;
+        optionBRadio.style = "margin-left:20px"
         optionBRadio.addEventListener("click", function () {
             //clickedButtonIds.push(this.id);
             //updateClickedButtonsList();
@@ -130,7 +131,7 @@ function generatePriceList(frontAmount, backAmount, seqLength, condition) {
 
     var rowWithoutBorder = 1;
     while(rowWithoutBorder < maxRowNumber){
-        removeBorder(table,rowWithoutBorder,rowWithoutBorder+6);
+        removeBorder(table,rowWithoutBorder,rowWithoutBorder+toggleRowNumber-2);
         rowWithoutBorder+=toggleRowNumber;
     }
 };
@@ -174,9 +175,9 @@ function updateSwtichRow(row, option) {
     var switchRow = document.getElementById("switchRow");    
     if (switchRow) {
         if(option == 'A'){
-            switchRow.innerHTML = amountBreak*(row+1);
+            switchRow.innerHTML = amountBreak*row;
         } else if(option == 'B'){
-            switchRow.innerHTML = amountBreak*row
+            switchRow.innerHTML = amountBreak*(row+1)
         }
     }
 }
@@ -194,7 +195,6 @@ function removeBorder(table,startRow, endRow) {
     }
 }
 
-
 function sequenceContent(frontAmount,backAmount,seqLength){
     const sequenceOption = `
                 <div class='card' id='card1'> 
@@ -206,6 +206,32 @@ function sequenceContent(frontAmount,backAmount,seqLength){
                 </div>
     `
     return(sequenceOption);
+}
+
+
+
+function hideTip(tipNumber) {
+    $('#step_' + tipNumber).hide();
+    $('#triangle_' + tipNumber).hide();
+    $('#popover_' +tipNumber).hide();
+    $('#popContent_' +tipNumber).hide();
+    $('#tipButton_' +tipNumber).hide();
+}
+
+function showTip(tipNumber) {
+    $('#popContent_' +tipNumber).html(tipText[tipNumber-1])
+    $('#step_' + tipNumber).show();
+    $('#triangle_' + tipNumber).show();
+    $('#popover_' +tipNumber).show();
+    $('#popContent_' +tipNumber).show();
+    $('#tipButton_' +tipNumber).show();
+}
+
+function nextTip() {
+    let tipNumber = parseInt($(this).attr('id').replace(/\D/g, ''));
+    
+    hideTip(tipNumber);
+    showTip(tipNumber+1);
 }
 
 //Function to update the list of clicked button IDs
@@ -262,5 +288,52 @@ function generateConfidenceQuestion(question){
 }
 
 
+function choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,currentCond){
+    
+    var qStyle = "color:#ff0040"
+    var indiffAmount = parseInt(indiffPoint);
+    var singleDate = (currentCond === 'today')?'today':`in ${currentCond}`;
 
+    if(indiffAmount === 0){
+        const choiceMeaningText = `
+                prefer receiving 
+                <span style=${qStyle}>
+                    £${frontAmount} today and £${backAmount} in ${seqLength} 
+                </span>
+                less than receiving
+                <span style=${qStyle}>
+                    £${indiffAmount} ${singleDate}
+                </span>
+                `
+        return(choiceMeaningText)
+    } else if(indiffAmount > maxRowNumber*amountBreak){
+        const choiceMeaningText = `
+                prefer receiving 
+                <span style=${qStyle}>
+                    £${frontAmount} today and £${backAmount} in ${seqLength} 
+                </span>
+                over receiving
+                <span style=${qStyle}>
+                    £${indiffAmount-amountBreak} ${singleDate}
+                </span>
+                `
+        return(choiceMeaningText)
+    } else {
+        const choiceMeaningText = `
+                prefer receiving 
+                <span style=${qStyle}>
+                    £${frontAmount} today and £${backAmount} in ${seqLength} 
+                </span>
+                over receiving 
+                <span style=${qStyle}>
+                    £${indiffAmount-amountBreak} ${singleDate}
+                </span>
+                    and less than receiving
+                <span style=${qStyle}>
+                    £${indiffAmount} ${singleDate}
+                </span>
+                `
+        return(choiceMeaningText)
+    }   
+}
 

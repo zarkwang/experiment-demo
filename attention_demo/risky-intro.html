@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <div id="instructionText" class="instruction"></div>
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script type="module">
+        $('#instructionText').html(riskyIntroText);
+
+        $('#nextButton').on('click', function () {
+            jatos.startNextComponent();
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/risky-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <!-- Content will be created by Javascript -->
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script>
+
+        var currentIndex = 0; 
+        var data = [];
+        var endIteration, newData;
+
+        function loadPage(index) {
+
+            let configQuestion = lotteries[index];
+            let riskyOutcome = configQuestion.outcome;
+            let riskyProb = configQuestion.prob;
+
+            $('#content-container').html(riskyChoicePage);
+            $("#riskyQuestionContent").html(riskyQuestionText);
+            
+            generatePriceList(riskyOutcome,riskyProb);
+
+            console.log(data);
+        };
+        
+        $('#nextButton').on('click', function () {
+
+            endIteration = (currentIndex + 1) === lotteries.length;
+            newData = lotteries[currentIndex];
+
+            let allChoicesChecked = true;
+
+            for (let x = 0; x <= maxRowNumber; x++) {
+                const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
+                if (!choiceChecked) {
+                    allChoicesChecked = false;
+                    $('#error-risky').html(error_intertemporalChoice);
+                break; 
+                } 
+            }
+
+            if(allChoicesChecked){
+                newData["indiff_point"] = parseInt($("#switchRow").html());
+                data.push(newData);
+                
+                if (!endIteration){
+                    currentIndex++;
+                    loadPage(currentIndex);
+                } else {
+                    jatos.startNextComponent(data);
+                }
+            }
+        });
+
+        loadPage(currentIndex);
+    </script>
+</body>
+</html>

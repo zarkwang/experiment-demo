@@ -1,0 +1,247 @@
+
+body { 
+    color: #333333; 
+    font-family: sans-serif; 
+    font-size: 16px; 
+    font-weight: 300; 
+    line-height: 1.5625; 
+    margin-bottom: 15px; }
+
+table {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 14px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+#content-container {
+    width: 800px; 
+    /* background-color: lightgray; */
+    position: absolute;
+    top: 0;
+    left: 50%; 
+    transform: translateX(-50%);
+}
+
+#consentBox {
+    margin-bottom: 30px;
+}
+
+.instruction {
+    height: 500px;
+    transform: translateY(10%);
+}
+
+#intertemporalQuestionContent {
+    font-family: sans-serif; 
+    width: 90%;
+}
+
+#notice {
+    color: #42a7f5; 
+    font-family: sans-serif; 
+    font-size: 14px;
+}
+
+#optionADiv {
+    display: flex;
+}
+
+.card {
+    display: inline-block;
+    width: 120px;
+    height: 100px;
+    background-color: #e4e0e0;
+    margin: 10px;
+    text-align: center
+}
+
+
+
+#cardContent1, #cardContent2 {
+    line-height: 24px;
+}
+
+.radio-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+#nextButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: blue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#confirmButton {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color:indianred;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.error-message {
+    color: red; 
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 16px; 
+    font-weight: 300; 
+    line-height: 1.5625; 
+    margin-bottom: 15px;
+}
+
+#intertemporalQuestionContent {
+    display: block; 
+    margin-left: 50px; 
+    margin-top: 20px;
+    margin-bottom: 20px; 
+}
+
+#tableContainer {
+    margin-bottom: 40px; 
+}
+
+#switchRowContainer {
+    display: none;
+}
+
+#confidenceQuestionBlock {
+    display: block; 
+    margin: 50px; 
+}
+
+
+
+
+.popover {
+    display: none;
+    width: 90%;
+    background-color: #7feb84;
+    border-radius: 3px;
+    position: absolute;
+    top: 18px;
+    min-height: 100px;
+  }
+  
+.triangle {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-bottom: 20px solid #7feb84; 
+}
+  
+.popover-content {
+    display: none;
+    width: 90%;
+    margin: 10px;
+    margin-bottom: 14px;
+}
+
+.tip-button {
+    display: none;
+    background-color: blue;
+    color: white;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#step_1 {
+    display: none;
+    position: relative;
+    width: 220px;
+    /* height: 500px; */
+    font-size: 15px;
+    transform: translate(-20px, -570px);
+}
+
+#step_2 {
+    display: none;
+    position: relative;
+    width: 260px;
+    /* height: 500px; */
+    font-size: 15px;
+    transform: translate(440px, -570px);
+}
+
+#step_3 {
+    display: none;
+    position: relative;
+    width: 260px;
+    /* height: 500px; */
+    font-size: 15px;
+    transform: translate(60px, -380px);
+}
+
+#step_4 {
+    display: none;
+    position: relative;
+    width: 260px;
+    /* height: 500px; */
+    font-size: 15px;
+    transform: translate(160px, -380px);
+}
+
+#tryChoice {
+    display: none;
+    position: relative;
+    width: 300px;
+    color: #42a7f5; 
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 16px; 
+    transform: translate(440px, -410px);
+}
+
+
+#confirmation-question {
+    width: 90%;
+    margin: 20px;
+    margin-bottom: 40px;
+    transform: translate(20px,-50px);
+}
+
+#comprehension-check {
+    width: 90%;
+    margin: 20px;
+    margin-bottom: 40px;
+    transform: translateX(20px);
+}

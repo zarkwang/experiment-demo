@@ -80,9 +80,16 @@ function loadStimuli(stimuli,index){
 // Stimuli for practice tasks
 const practiceStimuli = [
     {"train_id":0, "front_amount": 100, "backend_amount": 40, "seq_length": "12 months", "condition": "front-align"},
-    {"train_id":1, "front_amount": 400, "backend_amount": 10, "seq_length": "3 months", "condition": "back-align"},
-    {"train_id":2, "front_amount": 0, "backend_amount": 400, "seq_length": "6 months", "condition": "front-align"},
+    {"train_id":1, "front_amount": 400, "backend_amount": 100, "seq_length": "3 months", "condition": "back-align"},
+    {"train_id":2, "front_amount": 20, "backend_amount": 200, "seq_length": "6 months", "condition": "front-align"},
 ]
 
 
-export {stimuliContext,practiceStimuli,rand,drawStimuli,loadStimuli,addCheckboxes}
+// Lotteris
+const lotteries = [{'outcome':100, 'prob':'50%'},
+                   {'outcome':300, 'prob':'50%'},
+                   {'outcome':500, 'prob':'50%'},
+                   {'outcome':700, 'prob':'50%'}
+]
+
+export {stimuliContext,practiceStimuli,lotteries,rand,drawStimuli,loadStimuli,addCheckboxes}

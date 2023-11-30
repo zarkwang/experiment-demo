@@ -15,8 +15,9 @@
         <button id="nextButton">Next</button>
     </div>
 
-    <script type="module">
-        $('#instructionText').html(trainIntroText);
+    <script>
+        // Load the intro to training tasks
+        $('#instructionText').html(trainIntro);
 
         $('#nextButton').on('click', function () {
             jatos.startNextComponent();

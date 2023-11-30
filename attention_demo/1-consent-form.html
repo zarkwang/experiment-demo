@@ -19,14 +19,20 @@
     <script type="module">
         import {addCheckboxes} from './stimuli-timeline.js';
 
+        // const seedWorkerID = Math.floor(new Date().getTime() / 1000);
+
+        // Load the text for welcome information
         $('#welcomeInfo').html(welcomeInfo);
 
+        // Add checkboxes
         addCheckboxes('consentBox',consentQuestion);
+
 
         $('#nextButton').on('click', function () {
 
+            // Only when all boxes are checked, can participants be directed to the next page 
             var checkedBoxes = $('input[id^="consent_"]').filter(':checked');
-            var allChecked = checkedBoxes.length === consentQuestion.length
+            var allChecked = checkedBoxes.length === consentQuestion.length;
 
             if(!allChecked){
                 $('#error-consent').html(error_consentForm);

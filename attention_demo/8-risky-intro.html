@@ -15,8 +15,9 @@
         <button id="nextButton">Next</button>
     </div>
 
-    <script type="module">
-        $('#instructionText').html(riskyIntroText);
+    <script>
+        // Load the intro to risky choice tasks
+        $('#instructionText').html(riskyIntro);
 
         $('#nextButton').on('click', function () {
             jatos.startNextComponent();

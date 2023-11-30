@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="jatos.js"></script>
     <script src="lib/jquery-1.11.1.min.js"></script>
-    <script src="lib/risky-choice-list.js"></script> 
+    <script src="lib/intertemporal-choice-list.js"></script> 
     <script src="survey-text.js"></script> 
     <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
 </head>
@@ -16,8 +16,9 @@
         <button id="nextButton">Next</button>
     </div>
 
-    <script>
+    <script type="module">
 
+        import { lotteries } from "./stimuli-timeline.js"
         var currentIndex = 0; 
         var data = [];
         var endIteration, newData;
@@ -27,22 +28,23 @@
             let configQuestion = lotteries[index];
             let riskyOutcome = configQuestion.outcome;
             let riskyProb = configQuestion.prob;
+            let optionAContent = riskyOptionA();
+            let optionBContent = `£${riskyOutcome} with a ${riskyProb} chance`;
 
-            $('#content-container').html(riskyChoicePage);
-            $("#riskyQuestionContent").html(riskyQuestionText);
+            $('#content-container').html(intertemporalChoicePage);
+            $("#intertemporalQuestionContent").html(riskyQuestionText);
             
-            generatePriceList(riskyOutcome,riskyProb);
-
-            console.log(data);
+            generatePriceList(optionAContent,optionBContent);
+            hideRowsInitial();
         };
         
         $('#nextButton').on('click', function () {
 
+            // track whether the current index reaches the max number of tasks (stimuli)
             endIteration = (currentIndex + 1) === lotteries.length;
-            newData = lotteries[currentIndex];
-
+            
+            // If the sub-choice is not made, show the error message
             let allChoicesChecked = true;
-
             for (let x = 0; x <= maxRowNumber; x++) {
                 const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
                 if (!choiceChecked) {
@@ -53,8 +55,12 @@
             }
 
             if(allChoicesChecked){
+                // If all required choices are made, record the new data
+                newData = lotteries[currentIndex];
                 newData["indiff_point"] = parseInt($("#switchRow").html());
                 data.push(newData);
+                
+                console.log(data);
                 
                 if (!endIteration){
                     currentIndex++;

@@ -1,28 +1,53 @@
-
-
-//var clickedButtonIds = [];
 const maxRowNumber = 100;
 const amountBreak = 4;
 const toggleRowNumber = 10;
 
 
 // Function to generate the price list rows
-function generatePriceList(frontAmount, backAmount, seqLength, condition) {
+function intertemporalOptionA(seqLength,condition){
+    var optionAList = [];
 
-    //var sequenceText = "£" + frontAmount + " today and £" + backAmount + " in " + seqLength
+    for (var x = 0; x <= maxRowNumber; x++) {
+        if (condition === "front-align"){
+            optionAList.push("£" + amountBreak*x + " today");
+        } else if (condition === "back-align") {
+            optionAList.push("£" + amountBreak*x + " in " + seqLength);
+        }
+    }
+    return(optionAList);   
+}
+
+function riskyOptionA(){
+    var optionAList = [];
+    
+    for (var x = 0; x <= maxRowNumber; x++) {
+            optionAList.push("£" + amountBreak*x + " with certainty");
+    }
+    return(optionAList);   
+}
+
+function sequenceContent(frontAmount,backAmount,seqLength){
+    const sequenceOption = `
+                <div class='card' id='card1'> 
+                    <div id='cardContent1'></br> £${frontAmount}</br> today</div>
+                </div> 
+                    and
+                <div class='card' id='card2'> 
+                    <div id='cardContent2'></br> £${backAmount}</br> in ${seqLength}</div>
+                </div>
+    `
+    return(sequenceOption);
+}
+
+function generatePriceList(optionAContent,optionBContent) {
 
     var table = document.getElementById("priceListTable");
     for (var x = 0; x <= maxRowNumber; x++) {
         var row = document.createElement("tr");
 
-        
         var optionACell = document.createElement("td");
-        if (condition === "front-align"){
-            optionACell.textContent = "£" + amountBreak*x + " today";
-        } else if (condition === "back-align") {
-            optionACell.textContent = "£" + amountBreak*x + " in " + seqLength;
-        }
-        
+        optionACell.textContent = optionAContent[x];
+
         row.appendChild(optionACell);
 
         var choiceCell = document.createElement("td");
@@ -35,8 +60,6 @@ function generatePriceList(frontAmount, backAmount, seqLength, condition) {
         optionARadio.value = "Option A";
         optionARadio.id = "optionA_" + amountBreak*x;
         optionARadio.addEventListener("click", function () {
-            //clickedButtonIds.push(this.id);
-            //updateClickedButtonsList();
 
             // Automatically check "Option A" buttons below and "Option B" buttons above
             currentRow = parseInt(this.id.split("_")[1])/amountBreak;
@@ -67,8 +90,6 @@ function generatePriceList(frontAmount, backAmount, seqLength, condition) {
         optionBRadio.id = "optionB_" + amountBreak*x;
         optionBRadio.style = "margin-left:20px"
         optionBRadio.addEventListener("click", function () {
-            //clickedButtonIds.push(this.id);
-            //updateClickedButtonsList();
 
             // Automatically check "Option A" buttons below and "Option B" buttons above
             currentRow = parseInt(this.id.split("_")[1])/amountBreak;
@@ -112,13 +133,11 @@ function generatePriceList(frontAmount, backAmount, seqLength, condition) {
             var optionBCell = document.createElement("td");
             var optionBDiv = document.createElement("div");
 
-            optionBDiv.id = "sequenceOption";
+            optionBDiv.id = "constantOption";
             optionBCell.rowSpan = maxRowNumber +1;
 
-            var seqContent = sequenceContent(frontAmount,backAmount,seqLength);
-
             if (optionBDiv) {
-                optionBDiv.innerHTML = seqContent; 
+                optionBDiv.innerHTML = optionBContent; 
             }
 
             optionBCell.appendChild(optionBDiv);
@@ -195,20 +214,6 @@ function removeBorder(table,startRow, endRow) {
     }
 }
 
-function sequenceContent(frontAmount,backAmount,seqLength){
-    const sequenceOption = `
-                <div class='card' id='card1'> 
-                    <div id='cardContent1'></br> £${frontAmount}</br> today</div>
-                </div> 
-                    and
-                <div class='card' id='card2'> 
-                    <div id='cardContent2'></br> £${backAmount}</br> in ${seqLength}</div>
-                </div>
-    `
-    return(sequenceOption);
-}
-
-
 
 function hideTip(tipNumber) {
     $('#step_' + tipNumber).hide();
@@ -232,6 +237,33 @@ function nextTip() {
     
     hideTip(tipNumber);
     showTip(tipNumber+1);
+}
+
+
+function generateConfidenceQuestion(question){
+
+    const questionContent = document.getElementById('confidenceQuestionContent');
+    questionContent.innerHTML = question;
+
+    var sliderContainer = document.querySelector('.slider-container');
+
+    for (var i = 0; i <= 10; i++) {
+    var tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.style.left = (0.5 + i * 9.9) + '%';
+    sliderContainer.appendChild(tick);
+
+    var tickLabel = document.createElement('div');
+    tickLabel.className = 'tick-label';
+    tickLabel.innerText = (i * 10) + '%';
+    tickLabel.style.left = (0.5 + i * 9.9) + '%';
+    sliderContainer.appendChild(tickLabel);
+    }
+
+    $('#confidence-scale').on('input', function() {
+        let sliderValue = $(this).val();
+        $('#confidenceAnswer').text(sliderValue);
+    });
 }
 
 //Function to update the list of clicked button IDs
@@ -261,79 +293,28 @@ function nextTip() {
 // };
 
 
-function generateConfidenceQuestion(question){
+// function generateConfidenceQuestion(question){
 
-    const questionContent = document.getElementById('confidenceQuestionContent');
-    const form = document.getElementById("confidenceForm");
+//     const questionContent = document.getElementById('confidenceQuestionContent');
+//     const form = document.getElementById("confidenceForm");
 
-    questionContent.innerHTML = question;
+//     questionContent.innerHTML = question;
 
-    confidenceLevels.forEach((level, index) => {
-        const listItem = document.createElement('ul');
-        const radioBtn = document.createElement('input');
+//     confidenceLevels.forEach((level, index) => {
+//         const listItem = document.createElement('ul');
+//         const radioBtn = document.createElement('input');
 
-        radioBtn.type = 'radio';
-        radioBtn.id = 'level' + index;
-        radioBtn.name = 'confidenceLevel';
-        radioBtn.value = level;
+//         radioBtn.type = 'radio';
+//         radioBtn.id = 'level' + index;
+//         radioBtn.name = 'confidenceLevel';
+//         radioBtn.value = level;
 
-        const label = document.createElement('label');
-        label.htmlFor = 'level' + index;
-        label.appendChild(document.createTextNode(level));
+//         const label = document.createElement('label');
+//         label.htmlFor = 'level' + index;
+//         label.appendChild(document.createTextNode(level));
 
-        listItem.appendChild(radioBtn); 
-        listItem.appendChild(label); 
-        form.appendChild(listItem); 
-    });
-}
-
-
-function choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,currentCond){
-    
-    var qStyle = "color:#ff0040"
-    var indiffAmount = parseInt(indiffPoint);
-    var singleDate = (currentCond === 'today')?'today':`in ${currentCond}`;
-
-    if(indiffAmount === 0){
-        const choiceMeaningText = `
-                prefer receiving 
-                <span style=${qStyle}>
-                    £${frontAmount} today and £${backAmount} in ${seqLength} 
-                </span>
-                less than receiving
-                <span style=${qStyle}>
-                    £${indiffAmount} ${singleDate}
-                </span>
-                `
-        return(choiceMeaningText)
-    } else if(indiffAmount > maxRowNumber*amountBreak){
-        const choiceMeaningText = `
-                prefer receiving 
-                <span style=${qStyle}>
-                    £${frontAmount} today and £${backAmount} in ${seqLength} 
-                </span>
-                over receiving
-                <span style=${qStyle}>
-                    £${indiffAmount-amountBreak} ${singleDate}
-                </span>
-                `
-        return(choiceMeaningText)
-    } else {
-        const choiceMeaningText = `
-                prefer receiving 
-                <span style=${qStyle}>
-                    £${frontAmount} today and £${backAmount} in ${seqLength} 
-                </span>
-                over receiving 
-                <span style=${qStyle}>
-                    £${indiffAmount-amountBreak} ${singleDate}
-                </span>
-                    and less than receiving
-                <span style=${qStyle}>
-                    £${indiffAmount} ${singleDate}
-                </span>
-                `
-        return(choiceMeaningText)
-    }   
-}
-
+//         listItem.appendChild(radioBtn); 
+//         listItem.appendChild(label); 
+//         form.appendChild(listItem); 
+//     });
+// }

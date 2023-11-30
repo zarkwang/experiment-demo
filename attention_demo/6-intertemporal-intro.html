@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="jatos.js"></script>
     <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
     <script src="survey-text.js"></script> 
     <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
 </head>
@@ -16,7 +17,15 @@
     </div>
 
     <script type="module">
-        $('#instructionText').html(intertemporalIntroText);
+        // Load the intro to (formal) intertemporal choice tasks
+        $('#instructionText').html(intertemporalIntro);
+
+        let choiceMeaningText = choiceMeaning(120,80,'9 months','front-align',164,160);
+        let questionText = confidenceQuestionText + choiceMeaningText  + `?`;
+        
+        $('#confidenceExample').html(confidenceCheckPage);
+        $('#confidenceQuestionContent').html(questionText);
+        generateConfidenceQuestion(questionText);
 
         $('#nextButton').on('click', function () {
             jatos.startNextComponent();

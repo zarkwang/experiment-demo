@@ -15,9 +15,10 @@
         <button id="nextButton">Next</button>
     </div>
 
-    <script type="module">
-        $('#instructionText').html(instructionText);
-
+    <script>
+        // Load the text for instructions
+        $('#instructionText').html(instructions);
+        
         $('#nextButton').on('click', function () {
             jatos.startNextComponent();
         })

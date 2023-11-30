@@ -12,8 +12,10 @@ All files necessary for loading the experiment are stored in folder `attention_d
 
 All the `html` files are listed in the order in which they will appear in the experiment. In an online experiment, these files will be hosted on a server. However, you can use your computer as a local host to check each single webpage. If you have VS Code installed, it takes two steps:
 
-1. Click "**extension**" on the right side, then search "**live preview**" on the search bar. It is a plug-in that can easily preview webpages on the local device (developed by Microsoft). If you have installed a similar plug-in before, you can skip this step. 
-2. Click "**File**" →  "**Open Folder...**" on the top panel, then open the folder `attention_demo`.  Right click on the `html` file that you want to open. You should find an option "vscode-preview-server: Launch on browser" in the menu. Click it, then you will be able to check the webpage on your browser.
+1. Click "**extension**" on the right side, then search "Preview on Web Server" on the search bar. It is a plug-in that can easily preview webpages on the local device (developed by YuichiNukiyama). If you have installed a similar plug-in before, you can skip this step. 
+2. Click "**File**" →  "**Open Folder...**" on the top panel, then open the folder `attention_demo`.  Right click on the `html` file that you want to open. You should find an option "vscode-preview-server: Launch on browser" in the menu. Click it, then you will be able to check the webpage on your browser. 
+
+You can also use another plug-in for preview. I also recommend "live preview" (developed by Microsoft).
 
 ### 2. Edit the page
 

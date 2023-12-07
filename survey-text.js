@@ -62,13 +62,16 @@ act in real-life situations and make choices based on that.
 </p>
 
 <p>
-This page contains an example task. You can try it out yourself.
+This page is an example task.
 </p>
 `
 const instructions_1 = `
 <p>
 <span style='color:#2262c9'>You do not have to click through all rows.</span> 
-You only need to click an option in the row where you switch from choosing option B to choosing Option A. 
+You only need to click an option in the row where you switch from choosing option B to choosing Option A.
+</p>
+
+<p>
 We will automatically complete the choices on the rest of the rows for you. 
 </p>
 
@@ -78,7 +81,11 @@ You need to make another choice on the newly unfolded rows.
 </p>
 
 <p>
-Click "Continue" to see the details of the table.
+You can try it out yourself.
+</p>
+
+<p>
+For details of the table, click "Continue".
 </p>
 `
 

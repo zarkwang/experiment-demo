@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <div id="welcomeInfo"></div>
+        <div id="error-consent" class="error-message"></div>
+        <div id="consentBox"></div>
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+    <script type="module">
+        import {addCheckboxes} from './stimuli-timeline.js';
+
+        // const seedWorkerID = Math.floor(new Date().getTime() / 1000);
+
+        // Check screen width
+        var screenWidth = window.innerWidth;
+        // if(screenWidth <= 800){
+        //     var screenInfoHTML = screenInfo(screenWidth)
+        //     $('#content-container').css('width',screenWidth);
+        //     $('#content-container').html(screenInfoHTML);
+        //     $('#nextButton').hide();
+        // } else {
+            // Load the text for welcome information
+            $('#welcomeInfo').html(welcomeInfo);
+            // Add checkboxes
+            addCheckboxes('consentBox',consentQuestion);
+        // };
+
+
+        $('#nextButton').on('click', function () {
+
+            // Only when all boxes are checked, can participants be directed to the next page 
+            var checkedBoxes = $('input[id^="consent_"]').filter(':checked');
+            var allChecked = checkedBoxes.length === consentQuestion.length;
+
+            if(!allChecked){
+                $('#error-consent').html(error_consentForm);
+            } else {
+                jatos.startNextComponent({'pass_consent_form':true, 'screen_width':screenWidth})
+            }
+        });
+    </script>  
+</body>
+</html>

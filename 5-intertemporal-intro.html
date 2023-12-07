@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+    <style data="slider-style" type="text/css"></style>
+</head>
+<body>
+    <div id="content-container">
+        <div id="instructionText" class="instruction"></div>
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script type="module">
+        // Load the intro to (formal) intertemporal choice tasks
+        $('#instructionText').html(intertemporalIntro);
+
+        let style = document.querySelector('[data="slider-style"]');
+        let choiceMeaningText = choiceMeaning(120,80,'9 months','front-align',164,160);
+        let questionText = confidenceQuestionText + choiceMeaningText  + `?`;
+        
+        $('#confidenceExample').html(confidenceCheckPage);
+        $('#confidenceQuestionContent').html(questionText);
+        generateConfidenceQuestion(questionText,style);
+
+        $('#nextButton').on('click', function () {
+            jatos.startNextComponent();
+        })
+    </script>
+</body>
+</html>

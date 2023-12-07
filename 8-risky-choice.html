@@ -1,0 +1,77 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <!-- Content will be created by Javascript -->
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script type="module">
+
+        import { lotteries } from "./stimuli-timeline.js"
+        var currentIndex = 0; 
+        var data = [];
+        var endIteration, newData;
+
+        function loadPage(index) {
+
+            let configQuestion = lotteries[index];
+            let riskyOutcome = configQuestion.outcome;
+            let riskyProb = configQuestion.prob;
+            let optionAContent = riskyOptionA();
+            let optionBContent = `£${riskyOutcome} with a ${riskyProb} chance`;
+
+            $('#content-container').html(intertemporalChoicePage);
+            $("#intertemporalQuestionContent").html(riskyQuestionText);
+            
+            generatePriceList(optionAContent,optionBContent);
+            hideRowsInitial();
+        };
+        
+        $('#nextButton').on('click', function () {
+
+            // track whether the current index reaches the max number of tasks (stimuli)
+            endIteration = (currentIndex + 1) === lotteries.length;
+            
+            // If the sub-choice is not made, show the error message
+            let allChoicesChecked = true;
+            for (let x = 0; x <= maxRowNumber; x++) {
+                const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
+                if (!choiceChecked) {
+                    allChoicesChecked = false;
+                    $('#error-risky').html(error_intertemporalChoice);
+                break; 
+                } 
+            }
+
+            if(allChoicesChecked){
+                // If all required choices are made, record the new data
+                newData = lotteries[currentIndex];
+                newData["indiff_point"] = parseInt($("#switchRow").html());
+                data.push(newData);
+                
+                console.log(data);
+                
+                if (!endIteration){
+                    currentIndex++;
+                    loadPage(currentIndex);
+                } else {
+                    jatos.startNextComponent(data);
+                }
+            }
+        });
+
+        loadPage(currentIndex);
+    </script>
+</body>
+</html>

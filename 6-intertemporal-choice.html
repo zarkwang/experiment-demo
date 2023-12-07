@@ -1,0 +1,142 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+    <style data="slider-style" type="text/css"></style>
+</head>
+<body>
+    <div id="content-container">
+        <!-- Content will be created by Javascript -->
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script type="module">
+
+        import { stimuliContext,drawStimuli,loadStimuli } from "./stimuli-timeline.js";
+        const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
+        
+        // Under each condition, randomly draw stimuli from the full stimulus list
+        // nFrontAlign: number of stimuli for "front-align" condition
+        // nBackAlign: number of stimuli for "back-align" condition
+        let stimuliFront =  drawStimuli(stimuliContext.stimuli_frontAlign,
+                                        stimuliContext.nFrontAlign,
+                                        participant_ID*888);
+        let stimuliBack =  drawStimuli(stimuliContext.stimuli_backAlign,
+                                        stimuliContext.nBackAlign,
+                                        participant_ID*888);
+        const stimuli = stimuliFront.concat(stimuliBack);
+        
+        var currentIndex = 0; // question index
+        var pageName; // "intertemporal-choice" or "confidence-check"
+        var data = [];
+        var frontAmount,backAmount,seqLength,currentCond,endIteration,newData;
+
+        // Each intertemporal choice question is followed with a confidence check question
+
+        function loadPage(index) {
+
+            let configQuestion = loadStimuli(stimuli,index);
+            
+            pageName = pageIteration[index % pageIteration.length];
+            frontAmount = configQuestion.front_amount;
+            backAmount = configQuestion.backend_amount;
+            seqLength = configQuestion.seq_length;
+            currentCond = configQuestion.condition;
+            
+
+            if(pageName === "intertemporal-choice"){
+
+                let optionAContent = intertemporalOptionA(seqLength,currentCond);
+                let optionBContent = sequenceContent(frontAmount,backAmount,seqLength);
+
+                $('#content-container').html(intertemporalChoicePage);
+                $("#intertemporalQuestionContent").html(intertemporalQuestionText);
+                $('#qNumber').html('('+ Math.floor(1+index/pageIteration.length) +"/"+ stimuli.length +')');
+                
+                generatePriceList(optionAContent,optionBContent);
+                hideRowsInitial();
+            } else if (pageName === "confidence-check"){
+
+                // get the elements for choice meaning text
+                let upperAmount = data[data.length-1].indiff_point;
+                let lowerAmount = upperAmount - amountBreak;
+                let choiceMeaningText = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
+                let questionText = confidenceQuestionText + choiceMeaningText  + `?`;
+
+                // load confidence check question HTML
+                $('#content-container').html(confidenceCheckPage);
+                
+                // generate the confidence check question based on the choice meaning text 
+                let style = document.querySelector('[data="slider-style"]');
+                generateConfidenceQuestion(questionText,style);
+
+                // show the answer when moving the slider in the confidence scale
+                
+                
+            }
+        };
+
+        
+        $('#nextButton').on('click', function () {
+
+            // track whether the current index reaches the max number of tasks (stimuli)
+            endIteration = (currentIndex + 1) / pageIteration.length === stimuli.length;
+
+            if(pageName === "intertemporal-choice"){
+
+                // If the sub-choice is not made, show the error message
+                let allChoicesChecked = true;
+                for (let x = 0; x <= maxRowNumber; x++) {
+                    const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
+                    if (!choiceChecked) {
+                        allChoicesChecked = false;
+                        $('#error-intertemporal').html(error_intertemporalChoice);
+                    break; 
+                    } 
+                }
+
+                if(allChoicesChecked){
+                    // If all required choices are made, record the new data
+                    newData = endIteration?"":loadStimuli(stimuli,currentIndex);
+                    newData["indiff_point"] = parseInt($("#switchRow").html());
+                    data.push(newData);
+
+                    // move to the confidence check question
+                    currentIndex++;
+                    loadPage(currentIndex);
+                }
+
+            } else if (pageName === "confidence-check"){
+
+                let confidenceValue = parseInt($('#confidenceAnswer').html());
+
+                // If confidence check question is not answered, show the error message
+                // Otherwise, move to the next stimulus
+                if(!confidenceValue){
+                    $('#error-confidence').html(error_confirmCheck);
+                } else {
+                    data[data.length-1]["confidence"] = confidenceValue;
+
+                    console.log(data);
+
+                    if (!endIteration){
+                        currentIndex++;
+                        loadPage(currentIndex);
+                    } else {
+                        jatos.startNextComponent(data);
+                    }
+                }
+            }
+        });
+
+        loadPage(currentIndex);
+    </script>
+</body>
+</html>

@@ -89,18 +89,18 @@
             // When a choice is made, a reminder shows what the choice meaning
             let radios = $('input[name^="choice_"]');
             let checkedRadio = radios.filter(':checked');
-            let lowerAmount = parseInt($("#switchRow").html()) - amountBreak;
-            let upperAmount,choiceMeaningHTML,checkChoiceHTML;
+            let upperAmount = parseInt($("#switchRow").html());
+            let lowerAmount,choiceMeaningHTML,checkChoiceHTML;
             
             if (checkedRadio.length > 0 && checkedRadio.length < radios.length/2) {
                 // If some buttons are clicked but the sub-choice has not been made
-                upperAmount = lowerAmount + amountBreak*toggleRowNumber;
+                lowerAmount = upperAmount - amountBreak*toggleRowNumber;
                 choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
                 let anotherChoiceText = unfoldRange(upperAmount,lowerAmount);
                 checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + anotherChoiceText 
             } else {
                 // If all required choices are made
-                upperAmount = lowerAmount + amountBreak;
+                lowerAmount = upperAmount - amountBreak;
                 choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
                 checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + changeChoiceText 
             }

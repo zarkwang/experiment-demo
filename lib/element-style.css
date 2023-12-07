@@ -215,14 +215,13 @@ input[type="radio"]:checked:disabled {
 
 #step_1 {
     display: none;
-    position: absolute;
+    position: relative;
     width: 350px;
-    top: 200px;
     font-size: 15px;
     border: 2px black solid;
     padding: 10px;
     background-color: white;
-    transform: translateX(385px);
+    transform: translate(385px,-560px);
 }
 
 #step_2 {

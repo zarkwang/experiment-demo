@@ -67,21 +67,17 @@ This page is an example task.
 `
 const instructions_1 = `
 <p>
-<span style='color:#2262c9'>You do not have to click through all rows.</span> 
+<span style='color:#2262c9'>Note you do not have to click through all rows.</span> 
 You only need to click an option in the row where you switch from choosing option B to choosing Option A.
 </p>
 
 <p>
-We will automatically complete the choices on the rest of the rows for you. 
+We will automatically complete the choices on the rest of the rows for you.
 </p>
 
 <p>
 After you have made a choice, some rows will unfold between the two rows where you switched your preference. 
 You need to make another choice on the newly unfolded rows.
-</p>
-
-<p>
-You can try it out yourself.
 </p>
 
 <p>
@@ -252,7 +248,7 @@ const riskyQuestionText = `
     a small amount of money with certainty.
     </p>
     
-    Which option would you prefer in each row?
+    <span id='qNumber'></span> Which option would you prefer in each row?
     `
 
 

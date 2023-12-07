@@ -36,6 +36,7 @@
             
             generatePriceList(optionAContent,optionBContent);
             hideRowsInitial();
+            $('#qNumber').html('('+ (1+index) +"/"+ lotteries.length +')');
         };
         
         $('#nextButton').on('click', function () {

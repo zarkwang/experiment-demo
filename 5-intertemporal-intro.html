@@ -19,10 +19,12 @@
 
     <script type="module">
         // Load the intro to (formal) intertemporal choice tasks
+        // const sessionCond = sessionStorage.getItem("sessionCond");
+        
         $('#instructionText').html(intertemporalIntro);
 
         let style = document.querySelector('[data="slider-style"]');
-        let choiceMeaningText = choiceMeaning(120,80,'9 months','front-align',164,160);
+        let choiceMeaningText = choiceMeaning(120,80,'9 months','front-align',184,180);
         let questionText = confidenceQuestionText + choiceMeaningText  + `?`;
         
         $('#confidenceExample').html(confidenceCheckPage);

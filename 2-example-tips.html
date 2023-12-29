@@ -17,56 +17,68 @@
         <button id="confirmButton">Confirm</button>
     </div>
 
-    <script>
+    <script type="module">
         // Configure the example choice question
         // Participants are required to compare a single-reward (Option A) and a two-reward sequence (Option B)
         // Option B is “£120 (front_amount) today and £40 (backend_amount) in 1 month (seq_length)"
         // If "condition"  is "front-align", Option A is delivered "today"
         // If "condtion" is "back-align", Option A is delivered in "3 months" (seq_length)
 
-        var configQuestion  = {"front_amount":120,
-                            "backend_amount": 80,
-                            "seq_length": "3 months",
-                            "condition": "front-align"
-                            };
-                         
+        import { rand } from "./stimuli-timeline.js";
+        const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
+        // const sessionCond = sessionStorage.getItem("sessionCond");
+        // const condition = (sessionCond === null)?"front-align":sessionCond;
+        const condition = 'front-align';
+        const configQuestion  = {"front_amount":120,
+                                "backend_amount": 60,
+                                "seq_length": "3 months",
+                                "condition": condition,
+                                };
+        
+        var data = {"task":"example"};       
         var finishTips = false; 
         var startTry = false;                   
         var frontAmount = configQuestion.front_amount;
         var backAmount = configQuestion.backend_amount;
         var seqLength = configQuestion.seq_length;
         var currentCond = configQuestion.condition;
-        var indiffAmount;
+        var lowerAmount,upperAmount;
 
         function loadPage() {
 
             // Add tips (contained in popovers) and reminders
             let addIntro = `
+                <div id="maskRadioButtons"></div>
                 <div id="step_0">
                     <div id='popContent_0'>${instructions_0}</div>
                     <button id="tipButton_0" class="tip-button">Continue</button>
                 </div>
-                <div id="step_1">
-                    <div id='popContent_1'>${instructions_1}</div>
-                    <button id="tipButton_1" class="tip-button">Continue</button>
-                </div>
                 `;
-            let addTips = addTip(2) + addTip(3) + addTip(4) + addTip(5) + addTip(6);
+
+            let addTips = addTip(1) + addTip(2) + addTip(3) + addTip(4);
             let addTryChoice = `
-                <div id='tryChoice'>${tryChoiceText}</div>
+                <div id='tryChoice'></div>
             `
 
             // Page HTML and content 
             let exampleTipsPage = intertemporalChoicePage + addIntro + addTips + addTryChoice;
-            let optionAContent = intertemporalOptionA(seqLength,currentCond);
-            let optionBContent = sequenceContent(frontAmount,backAmount,seqLength);
+            let optionBContent = intertemporalOptions(seqLength,currentCond);
+            let optionAContent = sequenceContent(frontAmount,backAmount,seqLength);
+
 
             $('#content-container').html(exampleTipsPage);
             $("#intertemporalQuestionContent").html(intertemporalQuestionText);
             
             generatePriceList(optionAContent,optionBContent);
             hideRowsInitial();
-            $('input[name^="choice_"]').prop('disabled', true);
+            clickedConfirm = false;
+            // $('input[name^="choice_"]').prop('disabled', true);
+
+            // if(sessionCond === 'back-align'){
+            //     $('#step_3').css('transform','translateX(30px)');
+            //     $('#step_4').css('transform','translateX(30px)');
+            //     $('#step_5').css('transform','translateX(30px)');
+            // }
         };
 
 
@@ -87,128 +99,96 @@
         function checkChoices() {
 
             // When a choice is made, a reminder shows what the choice meaning
-            let radios = $('input[name^="choice_"]');
-            let checkedRadio = radios.filter(':checked');
-            let upperAmount = parseInt($("#switchRow").html());
-            let lowerAmount,choiceMeaningHTML,checkChoiceHTML;
+            var radios = $('input[name^="choice_"]');
+            var checkedRadio = radios.filter(':checked');
+            var choiceMeaningHTML,checkChoiceHTML;
             
-            if (checkedRadio.length > 0 && checkedRadio.length < radios.length/2) {
+            if (startTry && !clickedConfirm) {
                 // If some buttons are clicked but the sub-choice has not been made
-                lowerAmount = upperAmount - amountBreak*toggleRowNumber;
-                choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
-                let anotherChoiceText = unfoldRange(upperAmount,lowerAmount);
-                checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + anotherChoiceText 
-            } else {
-                // If all required choices are made
-                lowerAmount = upperAmount - amountBreak;
-                choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
+                var rowBreak = amountBreak*toggleRowNumber;
+                if(currentRow < maxRowNumber){
+                    upperAmount = clickedAmount + (clickedOptionType === 'A'?rowBreak:0);
+                    lowerAmount = upperAmount - rowBreak;
+                    choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
+                } else{
+                    lowerAmount = amountList[maxRowNumber];
+                    upperAmount = lowerAmount + rowBreak;
+                    choiceMeaningHTML = `
+                        value <span style='color:#c74040;display: inline-block;'>
+                            £${frontAmount} today and £${backAmount} in ${seqLength}</span> 
+                        somewhere above <span style='color:#c74040;display: inline-block;'>
+                            £${lowerAmount} today</span>
+                        `
+                }
+                
                 checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + changeChoiceText 
+            } 
+            if (startTry && clickedConfirm){
+                // If all required choices are made
+                var rowBreak = (currentRow <=maxRowNumber)?amountBreak:extendBreak
+                upperAmount = clickedAmount + (clickedOptionType === 'A'?rowBreak:0)
+                lowerAmount = upperAmount - rowBreak
+                choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
+                checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + finishChoiceText 
             }
 
             if(startTry){
                 $('#tryChoice').html(checkChoiceHTML);
-            
-                if(lowerAmount < 0 || lowerAmount >= maxRowNumber*amountBreak){
-                    $('#tryChoice').css("transform","translateY(200px)");
-                } else {
-                    $('#tryChoice').css("transform","translateY(0)");
-                }
             }
+
+                // if(lowerAmount < 0 || lowerAmount >= maxRowNumber*amountBreak){
+                //     $('#tryChoice').css("transform","translateY(200px)");
+                // } else {
+                //     $('#tryChoice').css("transform","translateY(0)");
+                // }
+            // }
         }
 
         loadPage();
         showTip(0);       
 
         // After a click, will skip to the next tip (or show the reminder)
-        $('#tipButton_0').on('click', function(){
-            $('input[name^="choice_"]').prop('disabled', false);
-        });
         $('#tipButton_0').on('click', nextTip);
         $('#tipButton_1').on('click', nextTip);
-        $('#tipButton_1').on('click', function(){
-            $('input[name^="choice_"]').prop('checked', false);
-            $('input[name^="choice_"]').prop('disabled', true);
-            hideRowsInitial();
-        });
         $('#tipButton_2').on('click', nextTip);
         $('#tipButton_3').on('click', nextTip);
-        $('#tipButton_4').on('click', nextTip);
-        $('#tipButton_5').on('click', nextTip);
-        $('#tipButton_6').on('click', function(){
-            hideTip(6);
-            $('#tryChoice').show();
-            $('input[name^="choice_"]').prop('checked', false);
-            $('input[name^="choice_"]').prop('disabled', false);
+        $('#tipButton_4').on('click', function(){
+            hideTip(4);
+            $('#tryChoice').text(tryChoiceText).show();
+            $('#maskRadioButtons').hide();
             hideRowsInitial();
             finishTips = true;
             startTry = true;
         });
 
-        $('input[name^="choice_"]').on('change', checkChoices);
+        $('input[name^="choice_"]').on('click', checkChoices);
 
         $('#nextButton').on('click', function () {
 
             // If the sub-choice is not made, show the error message  
-            let allChoicesChecked = true;
-            for (let x = 0; x <= maxRowNumber; x++) {
-                const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
-                if (!choiceChecked) {
-                    allChoicesChecked = false;
-                    $('#error-intertemporal').html(error_intertemporalChoice);
-                break; 
-                } 
-            }
-            
-            // let confirmValue = $('input[name="confirmation"]:checked').val();
-            // if(confirmValue === 'no'){
-            //     $('#error-confirm').html(error_redoChoice);
-            // }
-
             if(!finishTips){
-                $('#error-intertemporal').html(error_tips);
+                $('#error-choicelist').html(error_tips).show();
+            } else{
+                returnError(error_intertemporalChoice);
+            }
+
+            if(startTry && allChoicesChecked && !clickedConfirm){
+                var anotherChoiceText = unfoldRange(upperAmount,lowerAmount,seqLength,condition);
+                $('#tryChoice').html(anotherChoiceText);
             }
             
-            if(allChoicesChecked && finishTips){
+            if(startTry && allChoicesChecked && clickedConfirm){
                 let newData = configQuestion;
-                newData["indiff_point"] = parseInt($("#switchRow").html());
+                newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?0:amountBreak);
+                data['worker_id'] = jatos.workerId;
+                data["screen_width"] = window.innerWidth;
+                data['url'] = jatos.urlQueryParameters;
+                data["choice"] = newData;
 
-                jatos.startNextComponent(newData);
-                
-                // var confirmQuestionContent = addConfirmQuestion(data.front_amount,data.backend_amount,
-                //                                                 data.seq_length,data.indiff_point);
-                // $('#confirmation-question').html(confirmQuestionContent);
-                // $('#confirmButton').show();
-                // $('#confirmNo').on('click', function() {
-                //     $('input[name^="choice_"]').prop('checked', false);
-                //     $('#confirmButton').hide()
-                // });
+                // sessionStorage.setItem("sessionCond", sessionCond);
+                jatos.startNextComponent(data);
             }
         });
-
-        // function addConfirmQuestion(frontAmount,backAmount,seqLength,indiffPoint){
-
-        //     const choiceMeaningText = choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,'today')
-        //     const confirmQuestion = `
-        //         <div id='error-confirm' class='error-message'></div>
-        //         <p>The choice you made means that you ${choiceMeaningText}. Do you confirm this choice?</p>
-        //         <input type="radio" name="confirmation" id="confirmYes" value="yes">
-        //         <label for="confirmYes">${confirmOptions[0]} </label><br>
-                
-        //         <input type="radio" name="confirmation" id="confirmNo" value="no">
-        //         <label for="confirmNo">${confirmOptions[1]} </label>
-        //         `
-        //     return(confirmQuestion);
-        // }
-
-
-        // $('#confirmButton').on('click',function(){
-        //     let confirmValue = $('input[name="confirmation"]:checked').val();
-        //     if(!confirmValue){
-        //         $('#error-confirm').html(error_confirmCheck);
-        //     } else if(confirmValue === 'yes'){
-        //         jatos.startNextComponent(data);
-        //     }
-        // });  
     </script>
 </body>
 </html>

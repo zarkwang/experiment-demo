@@ -22,36 +22,42 @@
 
         import { practiceStimuli,rand,loadStimuli } from "./stimuli-timeline.js";
         const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
-            
+        // const sessionCond = sessionStorage.getItem("sessionCond");
+        // const condition = (sessionCond === null)?"front-align":sessionCond;
+        const condition = 'front-align';
+        const stimuli = practiceStimuli[condition];
+    
         var currentIndex = 0; // index for the current task (stimulus)
-        var data = [];
+        var data = {"task":"train","group":condition};
+        var choiceData = [];
         var frontAmount,backAmount,seqLength,currentCond,newData;
         var correctOption, wrongOption_1, wrongOption_2, optionOrder, endIteration;
+        var showCheckQuestion;
 
         function loadPage(index) {
 
-            let configQuestion = practiceStimuli[index];
+            let configQuestion = stimuli[index];
 
             frontAmount = configQuestion.front_amount;
             backAmount = configQuestion.backend_amount;
             seqLength = configQuestion.seq_length;
             currentCond = configQuestion.condition;
+            clickedConfirm = false;
 
             let addCheckQuestion = `
                 <div id="comprehension-check"></div>
             `
             let practiceChoicePage = intertemporalChoicePage + addCheckQuestion;
-            let optionAContent = intertemporalOptionA(seqLength,currentCond);
-            let optionBContent = sequenceContent(frontAmount,backAmount,seqLength);
+            let optionAContent = sequenceContent(frontAmount,backAmount,seqLength);
+            let optionBContent = intertemporalOptions(seqLength,currentCond);
             
             $('#content-container').html(practiceChoicePage);
             $("#intertemporalQuestionContent").html(intertemporalQuestionText);
             
             generatePriceList(optionAContent,optionBContent);
             hideRowsInitial();
-            $('#confirmButton').hide();
-            $('#notice').show();
-            $('#qNumber').html('('+ (1+index) +"/"+ practiceStimuli.length +')');
+            // $('#qNumber').html('('+ (1+index) +"/"+ stimuli.length +')');
+            showCheckQuestion = false;
         };
 
         function addCheckQuestion(newData){
@@ -62,13 +68,14 @@
             // wrongOption_2: the upper amount + 100, the range between upper and lower amounts * 2
             // If the upper amount in wrongOption_2 exceeds the max amount, change it to 0   
 
-            let indiffPoint = newData.indiff_point;
-            let wrongIndiff = (indiffPoint+100 > maxRowNumber*amountBreak)?0:(indiffPoint+100)
+            let upperAmount = newData.indiff_point;
+            let lowerAmount = (upperAmount > maxRowAmount)?(upperAmount - extendBreak):(upperAmount-amountBreak)
+            let wrongIndiff = (upperAmount+300 > amountList[amountList.length-1])?100:(upperAmount+233)
             
             correctOption = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,
-                                                        indiffPoint,indiffPoint-amountBreak);
-            wrongOption_1 = choiceMeaning(frontAmount+500,backAmount+500,seqLength,currentCond,
-                                                        indiffPoint,indiffPoint-amountBreak);
+                                                        upperAmount,lowerAmount);
+            wrongOption_1 = choiceMeaning(frontAmount+1000,backAmount+1000,seqLength,currentCond,
+                                                        upperAmount,lowerAmount);
             wrongOption_2 = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,
                                                         wrongIndiff,wrongIndiff-amountBreak*2);
 
@@ -98,58 +105,53 @@
         $('#nextButton').on('click', function () {
 
             // track whether the current index reaches the max number of tasks (stimuli)
-            endIteration = (currentIndex + 1) === practiceStimuli.length;
+            endIteration = (currentIndex + 1) === stimuli.length;
 
-            // If the sub-choice is not made, show the error message  
-            let allChoicesChecked = true;
-            for (let x = 0; x <= maxRowNumber; x++) {
-                const choiceChecked = $('input[name="choice_'+amountBreak*x +'"]:checked').val();
-                if (!choiceChecked) {
-                    allChoicesChecked = false;
-                    $('#error-intertemporal').html(error_intertemporalChoice);
-                break; 
-                } 
-            }
+            // If the choice is not made, show the error message  
+            returnError(error_intertemporalChoice);
 
-            if(allChoicesChecked){
+            if(clickedConfirm && !showCheckQuestion && allChoicesChecked){
                 // If all required choices are made, record the new data 
-                newData = practiceStimuli[currentIndex];
-                newData["indiff_point"] = parseInt($("#switchRow").html());
+                newData = stimuli[currentIndex];
+
+                if(currentRow <=maxRowNumber){
+                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
+                } else {
+                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?extendBreak:0);
+                }
                 
                 // load the comprehension check question 
                 let comprehensionCheckHTML = addCheckQuestion(newData);
-                
                 $('#comprehension-check').html(comprehensionCheckHTML);
-
-                // show the confirmation button
-                $('#confirmButton').show();
+                showCheckQuestion = true;
 
                 // After clicking "Next", disable choice buttons so participants are not allowed to redo choices 
                 $('input[name^="choice_"]').prop('disabled', true);
             }
-        });
 
-        $('#confirmButton').on('click',function(){
+            if(showCheckQuestion){
+                let comprehensionValue = $('input[name="comprehension"]:checked').val();
+                if(!comprehensionValue){
+                        $('#error-confirm').html(error_confirmCheck);
+                } else {
+                    // whether the answer for comprehension check is correct
+                    newData['correct'] = comprehensionValue === correctOption;
+                    newData['comprehension_choice'] = comprehensionValue;
+                    choiceData.push(newData);
 
-            let confirmValue = $('input[name="comprehension"]:checked').val();
-            
-            // If comprehension check question is not answered, show the error message
-            // Otherwise, preceed to the next task (stimulus)
-            if(!confirmValue){
-                $('#error-confirm').html(error_confirmCheck);
-            } else { 
-                // whether the answer for comprehension check is correct
-                newData['correct'] = confirmValue === correctOption;
-                data.push(newData);
-                
-                if(!endIteration){
-                    currentIndex++;
-                    loadPage(currentIndex);
-                } else if(endIteration){
-                    jatos.startNextComponent(data);
+                    console.log(choiceData);
+                    
+                    if(!endIteration){
+                        currentIndex++;
+                        loadPage(currentIndex);
+                    } else if(endIteration){
+                        data['worker_id'] = jatos.workerId;
+                        data['choice'] = choiceData;
+                        jatos.startNextComponent(data);
+                    }
                 }
             }
-        });  
+        });
 
         loadPage(currentIndex);
     </script>

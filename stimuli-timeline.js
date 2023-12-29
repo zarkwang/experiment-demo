@@ -3,21 +3,25 @@ import { rand,addCheckboxes } from "./lib/utils.js";
 
 
 const amount_frontVary = [
-    {"front_amount": 40, "backend_amount": 40},
-    {"front_amount": 80, "backend_amount": 40},
-    {"front_amount": 120, "backend_amount": 40},
-    {"front_amount": 160, "backend_amount": 40},
-    {"front_amount": 200, "backend_amount": 40},
-    {"front_amount": 80, "backend_amount": 80},
-    {"front_amount": 120, "backend_amount": 80},
-    {"front_amount": 160, "backend_amount": 80},
-    {"front_amount": 200, "backend_amount": 80},
+    {"front_amount": 60, "backend_amount": 60},
+    {"front_amount": 120, "backend_amount": 60},
+    {"front_amount": 180, "backend_amount": 60},
+    {"front_amount": 240, "backend_amount": 60},
+    {"front_amount": 300, "backend_amount": 60},
+    {"front_amount": 360, "backend_amount": 60},
+    {"front_amount": 420, "backend_amount": 60},
+    {"front_amount": 480, "backend_amount": 60},
+    {"front_amount": 540, "backend_amount": 60},
+    {"front_amount": 600, "backend_amount": 60},
+    {"front_amount": 660, "backend_amount": 60},
+    {"front_amount": 720, "backend_amount": 60},
+    {"front_amount": 780, "backend_amount": 60},
+    {"front_amount": 840, "backend_amount": 60},
     ]
 
-// (5+4)
+// (4+4)
 
 const amount_backVary = [
-    {"front_amount": 40, "backend_amount": 40},
     {"front_amount": 40, "backend_amount": 80},
     {"front_amount": 40, "backend_amount": 120},
     {"front_amount": 40, "backend_amount": 160},
@@ -28,12 +32,14 @@ const amount_backVary = [
     {"front_amount": 80, "backend_amount": 200},
     ]
 
+// (4+4)
 
-const seqLengthList = ['1 month','9 months'];
+const seqLengthList = ['6 months','12 months'];
+
+// possible stimuli in total: (8 + 8) * 2 = 32
 
 const stimuliContext = {
-    'nFrontAlign': 2,
-    'nBackAlign': 2,
+    'n': 14, // number of stimuli
     'stimuli_frontAlign': fullStimuli('front-align',amount_frontVary,seqLengthList),
     'stimuli_backAlign': fullStimuli('back-align',amount_backVary,seqLengthList)
 }
@@ -71,25 +77,28 @@ function loadStimuli(stimuli,index){
 
     let qOrder = Math.floor(index/2);
     let presentStimulus = stimuli[qOrder];
-    presentStimulus['q_present_order'] = qOrder;
+    presentStimulus['present_order'] = qOrder;
 
     return(presentStimulus)
 };
 
 
 // Stimuli for practice tasks
-const practiceStimuli = [
-    {"train_id":0, "front_amount": 100, "backend_amount": 40, "seq_length": "12 months", "condition": "front-align"},
-    {"train_id":1, "front_amount": 400, "backend_amount": 100, "seq_length": "3 months", "condition": "back-align"},
-    {"train_id":2, "front_amount": 20, "backend_amount": 200, "seq_length": "6 months", "condition": "front-align"},
-]
-
+const practiceStimuli = {
+    'front-align':[
+        {"train_id":0, "front_amount": 600, "backend_amount": 180, "seq_length": "12 months", "condition": "front-align"},
+        // {"train_id":1, "front_amount": 30, "backend_amount": 90, "seq_length": "1 month", "condition": "front-align"},
+    ],
+    'back-align':[
+        {"train_id":0, "front_amount": 400, "backend_amount": 100, "seq_length": "3 months", "condition": "back-align"},
+        {"train_id":1, "front_amount": 20, "backend_amount": 200, "seq_length": "6 months", "condition": "back-align"},
+    ]
+}
 
 // Lotteris
-const lotteries = [{'outcome':100, 'prob':'50%'},
-                   {'outcome':300, 'prob':'50%'},
-                   {'outcome':500, 'prob':'50%'},
-                   {'outcome':700, 'prob':'50%'}
+const lotteries = [{'outcome':300, 'prob':'50%'},
+                   {'outcome':600, 'prob':'50%'},
+                   {'outcome':900, 'prob':'50%'},
 ]
 
 export {stimuliContext,practiceStimuli,lotteries,rand,drawStimuli,loadStimuli,addCheckboxes}

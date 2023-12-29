@@ -18,11 +18,27 @@
     </div>
     <script type="module">
         import {addCheckboxes} from './stimuli-timeline.js';
+        $('#welcomeInfo').html(welcomeInfo);
+        addCheckboxes('consentBox',consentQuestion);
 
+        $('#nextButton').on('click', function () {
+
+            // Only when all boxes are checked, can participants start the next component
+            var checkedBoxes = $('input[id^="consent_"]').filter(':checked');
+            var allChecked = checkedBoxes.length === consentQuestion.length;
+
+            if(!allChecked){
+                $('#error-consent').html(error_consentForm);
+            } else {
+                jatos.startNextComponent()
+            }
+        });
+        
+        // var sessionCond;
         // const seedWorkerID = Math.floor(new Date().getTime() / 1000);
 
         // Check screen width
-        var screenWidth = window.innerWidth;
+        // var screenWidth = window.innerWidth;
         // if(screenWidth <= 800){
         //     var screenInfoHTML = screenInfo(screenWidth)
         //     $('#content-container').css('width',screenWidth);
@@ -30,24 +46,21 @@
         //     $('#nextButton').hide();
         // } else {
             // Load the text for welcome information
-            $('#welcomeInfo').html(welcomeInfo);
+            // $('#welcomeInfo').html(welcomeInfo);
             // Add checkboxes
-            addCheckboxes('consentBox',consentQuestion);
+            // addCheckboxes('consentBox',consentQuestion);
         // };
 
-
-        $('#nextButton').on('click', function () {
-
-            // Only when all boxes are checked, can participants be directed to the next page 
-            var checkedBoxes = $('input[id^="consent_"]').filter(':checked');
-            var allChecked = checkedBoxes.length === consentQuestion.length;
-
-            if(!allChecked){
-                $('#error-consent').html(error_consentForm);
-            } else {
-                jatos.startNextComponent({'pass_consent_form':true, 'screen_width':screenWidth})
-            }
-        });
+        // for (var i=1; i<=100; i++){
+        //     var conditionNumber = Math.round(Math.random());
+        //     if (conditionNumber === 0){
+        //         sessionCond = 'front-align'
+        //         break;
+        //     } else if (conditionNumber === 1){
+        //         sessionCond = 'back-align'
+        //         break;
+        //     } 
+        // }
     </script>  
 </body>
 </html>

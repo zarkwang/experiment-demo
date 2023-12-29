@@ -1,21 +1,9 @@
 
 // Consent Form
-function screenInfo(width){
-    var screenInfo= `
-        <div style='display:flex; align-items:center; justify-content:center; transform:translateY(100%)'>
-        This study can only run on a screen with a width above 800px.<br>
-        <br>
-        Your screen width is ${width}px.
-        </div>
-    `
-    return(screenInfo)
-}
-
 const welcomeInfo = `
 <p>Thanks for your interest in the <span style="font-weight:bold">Money and Time Preference Study</span>.</p>
 
-<p>This study aims to understand how people feel about money and time. 
-It consists of 28 choice tasks and will take about 15 minutes to complete.
+<p>This study consists of 19 choice tasks and will take about 10 minutes to complete.
 </p>
 
 <p>Please consider each task carefully and choose the options that truly reflect your preferences. 
@@ -50,7 +38,7 @@ In this study, tasks will be presented in tables.
 </p>
 
 <p>
-Each row of a table has two options, labeled as <span style='color:#2262c9'>Option A</span> and 
+Each row of a table has two options - <span style='color:#2262c9'>Option A</span> and 
 <span style='color:#2262c9'>Option B</span>.
 These options offer different amounts of money at different points in time. 
 You should choose the option you prefer. 
@@ -62,47 +50,55 @@ act in real-life situations and make choices based on that.
 </p>
 
 <p>
-This page is an example task.
+In each task, you only need to click an option in the row where 
+you switch from choosing option A to choosing Option B.
+Choices on the rest of the rows will be completed automatically.
+You need to make such an active choice <span style='color:#2262c9'>twice</span> in a task. 
+</p>
+
+<p>
+This page contains an example task. Click "Continue" for details. 
 </p>
 `
-const instructions_1 = `
-<p>
-<span style='color:#2262c9'>Note you do not have to click through all rows.</span> 
-You only need to click an option in the row where you switch from choosing option B to choosing Option A.
-</p>
+// const instructions_1 = `
+// <p>
+// <span style='color:#2262c9'>You do not have to click through all rows.</span> 
+// You only need to click an option in the row where you switch from choosing option B to choosing Option A.
+// </p>
 
-<p>
-We will automatically complete the choices on the rest of the rows for you.
-</p>
+// <p>
+// Choices on the rest of the rows will be completed automatically.
+// </p>
 
-<p>
-After you have made a choice, some rows will unfold between the two rows where you switched your preference. 
-You need to make another choice on the newly unfolded rows.
-</p>
+// <p>
+// After you have made a choice, some rows will unfold between the two rows where you switched your preference. 
+// You need to make another choice on the newly unfolded rows.
+// </p>
 
-<p>
-For details of the table, click "Continue".
-</p>
-`
+// <p>
+// For details of the table, click "Continue".
+// </p>
+// `
 
 
 // Example with Tips
 const tipText = [
-`(1/5) Option A offers you a sum of money on a single date. This amount varies from row to row.`,
-`(2/5) Under Option B, you would receive two different amounts on two different dates. 
-This option is constant across rows.`,
-`(3/5) If you click Option A in this row, it means you prefer Option A to Option B 
-for all rows <span style="font-weight: bold">below</span> this (including this row).`,
-`(4/5) If you click Option B in this row, it means you prefer Option B to Option A 
-for all rows <span style="font-weight: bold">above</span> this (including this row).`,
-`(5/5) You can also choose Option A on all rows (or choose Option B on all rows).`
+`(1/4) Each row has two options. Option A offers you two amounts 
+on two different dates. This option is fixed across rows.`,
+`(2/4) Option B offers a sum of money on a single date. It varies from row to row.`,
+`(3/4) If you click Option A in this row, we assume you will also choose Option A for any row 
+<span style="font-weight: bold">above</span> this row.`,
+`(4/4) If you click Option B in this row, we assume you will also choose Option B for any row 
+<span style="font-weight: bold">below</span> this row.`,
 ]
 
-const tryChoiceText = "Now, you can try to make your own choice."
+const tryChoiceText = "Now, try to make your own choices."
 
 const choiceIndicationText = 'The choice indicates that you'
 
-const changeChoiceText = 'You can always change your choice before you click "Next".'
+const changeChoiceText = 'You can change your choice before clicking "Next".'
+
+const finishChoiceText = 'This taks is completed. Click "Next" to proceed.'
 
 // const confirmOptions = ['Yes &rarr; Click "Confirm" to precede to the next page. ',
 //                         'No &rarr; I want to redo my choices.']
@@ -111,52 +107,42 @@ const changeChoiceText = 'You can always change your choice before you click "Ne
 // Practice Tasks
 const trainIntro = `
 <p>
-Now, there will be three practice tasks.
+Now, we would like you to complete a conprehension check task.
 </p>
 
 <p>
-Each practice task will be followed by an additional question about the choice you made.
-These questions aim to check your comprehension on the tasks.
-Please try your best to answer the questions correctly.
+The task follows the same format as the previous example. After you complete it, 
+there will be an additional question about the choices that you have made.
+Please try your best to answer this question correctly.
 </p>
 
 <p>
-Once you complete all practice tasks, you can proceed to the formal tasks.
-</p>
-
-<p>
-Please click "Next" to start the practice.
+Click "Next" to view the comprehension check task.
 </p>
 `
 const comprehensionQuestionText = `
     (<span style='font-weight:bold'>Comprehension Check</span>) What do you mean by your choice? 
-    <p>After answering this question, click "Confirm" to proceed.</p>
 `
 
 // Intro to Intertemporal Choice Tasks
 const intertemporalIntro = `
 <p>
-Starting from the next page, you will see 20 choice tasks. 
-These tasks follow the same format as the practice tasks.
+The formal tasks will start from the next page.
 </p>
 
 <p>
+You will see 14 choice tasks. 
 Please think carefully about each task and choose the options that 
 <span style="font-weight:bold">truly reflect your preferences</span>. 
 </p>
 
 <p>
-After each task, there will be a question asking you how certain you are that
-the choice you have made truly reflects your preference. Below is an
+After each task, there will be a question asking how certain you are that
+the choices you have made truly reflect your preference. Below is an
 example of this question (you can try it out yourself):
 </p>
 
 <div id='confidenceExample'></div>
-
-<p>
-We will no longer ask the comprehension check question or provide the reminder for each task. 
-Please also note that clicking "Next" means you are ready to submit your choices.
-</p>
 
 <p>
 Please click "Next" to start the formal tasks.
@@ -180,10 +166,7 @@ const intertemporalChoicePage = `
             <!-- Rows will be generated here using JavaScript -->
         </tbody>
     </table>
-
-    <div id="switchRowContainer">
-        Switch Row:<span id="switchRow"></span>
-    </div>
+    <div id='confirmContainer'></div>
 `
 
 const confidenceCheckPage = `
@@ -205,13 +188,12 @@ const confidenceCheckPage = `
 const intertemporalQuestionText = `
     <p id="notice">
     <span style="font-weight: bold">Reminder:</span>
-    You only need to click an option in the row where you switch from choosing option B to choosing Option A. 
-    If you click Option B in a row, we assume you will choose Option B for any row above that row. 
-    If you click Option A in a row, we assume you will choose Option A for any row below that row. 
-    After one click, some rows may unfold so you may need to make another choice. </p>
+    You only need to click an option in the row where you switch from choosing option A to choosing Option B. 
+    If you click Option A in a row, we assume you will choose Option A for any row above that row. 
+    If you click Option B in a row, we assume you will choose Option B for any row below that row.</p>
     
     <span id='qNumber'></span> Which option would you prefer in each row?
-    <div id='error-intertemporal' class='error-message'></div>
+    <div id='error-choicelist' class='error-message'></div>
     `
 
 // Text for Confidence Check
@@ -227,12 +209,12 @@ const confidenceQuestionText = "How certain are you that you actually"
 // Intro to Risky Choices
 const riskyIntro = `
 <p>
-Before this survey ends, please complete four additional choice tasks to help us understand how you feel about 
+Before the study ends, please complete three additional choice tasks to help us understand how you feel about 
 <span style='font-weight:bold'>taking risks</span>. 
-These tasks follow the same format as the previous tasks. 
 </p>
 
 <p>
+These tasks follow the same format as the previous tasks. 
 On each row, you can choose whether to get a small amount of money with certainty or 
 a large amount with some probability. 
 </p>
@@ -249,13 +231,14 @@ const riskyQuestionText = `
     </p>
     
     <span id='qNumber'></span> Which option would you prefer in each row?
+    <div id='error-risky' class='error-message'></div>
     `
 
 
 // Error Message
 const error_consentForm = "* Please check all boxes if you agree to participate in this study."
 const error_intertemporalChoice = "* Please complete all choices before proceeding."
-const error_confirmCheck = "* Please answer this question."
+const error_confirmCheck = `* Try your best to answering this question correctly, then click "Next".`
 const error_tips = "* Please read through the instructions."
 // const error_redoChoice = "* Please redo your choices before proceeding."
 
@@ -263,7 +246,7 @@ const error_tips = "* Please read through the instructions."
 // Choice meaning
 function choiceMeaning(frontAmount,backAmount,seqLength,condition,upperAmount,lowerAmount){
     
-    const itemStyle = "color:#ff0040;display: inline-block;"
+    const itemStyle = "color:#c74040;display: inline-block;"
     const singeDate = (condition === 'front-align')?'today':`in ${seqLength}`;
 
     if(upperAmount === 0){
@@ -272,7 +255,7 @@ function choiceMeaning(frontAmount,backAmount,seqLength,condition,upperAmount,lo
                 somewhere below <span style=${itemStyle}>£${upperAmount} ${singeDate}</span>
                 `
         return(choiceMeaningText)
-    } else if(upperAmount > maxRowNumber*amountBreak){
+    } else if(upperAmount > amountList[amountList.length-1]){
         const choiceMeaningText = `
                 value <span style=${itemStyle}>£${frontAmount} today and £${backAmount} in ${seqLength}</span> 
                 somewhere above <span style=${itemStyle}>£${lowerAmount} ${singeDate}</span>
@@ -291,14 +274,29 @@ function choiceMeaning(frontAmount,backAmount,seqLength,condition,upperAmount,lo
 }
 
 
-function unfoldRange(upperAmount,lowerAmount){
-    const itemStyle = "color:#ff0040;display: inline-block;"
-    const anotherChoiceText = `
-        The range <span style=${itemStyle}>£${lowerAmount} today</span> to 
-        <span style=${itemStyle}>£${upperAmount} today</span> in Option A has now unfolded. 
-        Please make another choice in this more precise range.
-        `
-    return(anotherChoiceText)
+function unfoldRange(upperAmount,lowerAmount,seqLength,condition){
+    
+    const itemStyle = "color:#c74040;display:inline-block;"
+    const singeDate = (condition === 'front-align')?'today':`in ${seqLength}`;
+    
+    if(upperAmount > amountList[maxRowNumber]){
+        const anotherChoiceText = `
+            Note the range above <span style=${itemStyle}>£${lowerAmount} ${singeDate}</span> has unfolded.
+            <br><br> 
+            Please make another choice in this more precise range.
+            `
+            return(anotherChoiceText)
+    } else {
+        const anotherChoiceText = `
+            Note the range between <span style=${itemStyle}>£${lowerAmount}</span>
+            and
+            <span style=${itemStyle}>£${upperAmount} ${singeDate}</span> 
+            has unfolded. 
+            <br><br> 
+            Please make another choice in this more precise range.
+            `
+        return(anotherChoiceText)
+    }
 }
 
 // function choiceMeaning(frontAmount,backAmount,seqLength,indiffPoint,currentCond){

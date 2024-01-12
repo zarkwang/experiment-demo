@@ -35,8 +35,8 @@
             let riskyOutcome = configQuestion.outcome;
             let riskyProb = configQuestion.prob;
 
-            amountBreak = riskyOutcome/12;
-            amountList = optionAmounts(0);
+            amountBreak = riskyOutcome/15;
+            amountList = optionAmounts(amountBreak);
 
             let optionAContent = `get <span style=${dateColor}>£${riskyOutcome}</span> with a ${riskyProb} chance`;
             let optionBContent = certaintyOptions();
@@ -47,7 +47,7 @@
             generatePriceList(optionAContent,optionBContent);
             // $('#priceListTable td')[0].style.width = '260px';
             // $('#priceListTable td')[2].style.width = '160px';
-            $('#qNumber').html('Progress: '+ Math.floor(1+index/lotteries.length) +"/"+ lotteries.length);
+            $('#qNumber').html('Progress: '+ (1+index) +"/"+ lotteries.length);
             loadTime = new Date().getTime();
         };
         

@@ -4,7 +4,7 @@ const welcomeInfo = `
 <p>Thanks for your interest in the study of <span style="font-weight:bold">Preferences in Money, Time and Risk</span>.</p>
 
 <p>This study consists of 22 decision tasks. These tasks are divided into 3 parts. 
-It will take about 13 minutes to complete the whole study.  
+It will take about 14 minutes to complete the whole study.  
 </p>
 
 <p>Please consider each task carefully and choose the options that truly reflect your preferences. 
@@ -13,6 +13,9 @@ Your answers will remain confidential and will only be used for research purpose
 <p>Please note your decision to participate in this study is voluntary. 
 You are free to withdraw at any time simply by closing the web page and 
 any responses you have already given will be deleted.</p>
+
+<p>Please do <span style='font-weight:bold'>not</span> refresh any page while doing the tasks. Otherwise,
+you may lose your data and be excluded from the study.</p>
 
 <p>
 Should you have any questions about the present study, 
@@ -42,7 +45,7 @@ In this study, most tasks will be presented in tables.
 <p>
 Each row of a table has two options - <span style='color:#2262c9'>Option A</span> and 
 <span style='color:#2262c9'>Option B</span>.
-These options may offer different amounts of money at different points in time. 
+These options offer different amounts of money at different points in time. 
 You should choose the option you prefer in each row. 
 </p>
 
@@ -89,13 +92,13 @@ const finishChoiceText = 'This taks is completed. Click "Next" to proceed.'
 // Practice Tasks
 const trainIntro = `
 <p>
-This study consists of 3 parts. Before you start Part 1, 
+This study has 3 parts. Before you start Part 1, 
 we would like you to complete a <span style='font-weight:bold'>conprehension check</span> task.
 </p>
 
 <p>
 The task follows the same format as the previous example. After you complete it, 
-there will be an additional question about the choices that you have made.
+there will be an additional question about the choice that you have made.
 Please try your best to answer this question correctly.
 </p>
 
@@ -110,7 +113,7 @@ const comprehensionQuestionText = `
 // Intro to Intertemporal Choice Tasks
 const intertemporalIntro = `
 <p>
-Now, you enter the Part 1 of this study. You will see 12 tasks in this part. 
+Now, you enter the Part 1 of this study. This part contains 12 tasks. 
 </p>
 
 <p>
@@ -120,7 +123,7 @@ Please think carefully about each task and choose the options that
 
 <p>
 After each task, there will be a question asking how certain you are that
-the choices you have made truly reflect your preference. Below is an
+the choice you have made truly reflect your preference. Below is an
 example of this question (you can try it out yourself):
 </p>
 
@@ -361,7 +364,7 @@ Below is an example task:
 <div id='confidenceExample'></div>
 
 <p>
-In this example, you should enter an amount for <span style='font-weight:bold'>X</span> such that you value 
+In this example, the amount you enter for <span style='font-weight:bold'>X</span> should ensure that you value 
 <span style='font-weight:bold'>receive
 <span style='color:#11439e'>£X today</span></span> 
 and <span style='font-weight:bold'>receive

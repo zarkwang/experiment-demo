@@ -20,19 +20,17 @@
 
     <script type="module">
 
-        import { practiceStimuli,rand,loadStimuli } from "./stimuli-timeline.js";
+        import { practiceStimuli,loadStimuli,rand } from "./stimuli-timeline.js";
         const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
-        // const sessionCond = sessionStorage.getItem("sessionCond");
-        // const condition = (sessionCond === null)?"front-align":sessionCond;
         const condition = 'front-align';
         const stimuli = practiceStimuli[condition];
     
         var currentIndex = 0; // index for the current task (stimulus)
-        var data = {"task":"train","group":condition};
+        var data = {"task":"train"};
         var choiceData = [];
         var frontAmount,backAmount,seqLength,currentCond,newData;
         var correctOption, wrongOption_1, wrongOption_2, optionOrder, endIteration;
-        var showCheckQuestion;
+        var showCheckQuestion = false;
 
         function loadPage(index) {
 
@@ -42,7 +40,8 @@
             backAmount = configQuestion.backend_amount;
             seqLength = configQuestion.seq_length;
             currentCond = configQuestion.condition;
-            clickedConfirm = false;
+
+            amountList = optionAmounts(frontAmount - amountBreak);
 
             let addCheckQuestion = `
                 <div id="comprehension-check"></div>
@@ -53,11 +52,8 @@
             
             $('#content-container').html(practiceChoicePage);
             $("#intertemporalQuestionContent").html(intertemporalQuestionText);
-            
+
             generatePriceList(optionAContent,optionBContent);
-            hideRowsInitial();
-            // $('#qNumber').html('('+ (1+index) +"/"+ stimuli.length +')');
-            showCheckQuestion = false;
         };
 
         function addCheckQuestion(newData){
@@ -69,8 +65,8 @@
             // If the upper amount in wrongOption_2 exceeds the max amount, change it to 0   
 
             let upperAmount = newData.indiff_point;
-            let lowerAmount = (upperAmount > maxRowAmount)?(upperAmount - extendBreak):(upperAmount-amountBreak)
-            let wrongIndiff = (upperAmount+300 > amountList[amountList.length-1])?100:(upperAmount+233)
+            let lowerAmount = upperAmount-amountBreak
+            let wrongIndiff = (upperAmount+10 > amountList[amountList.length-1])?upperAmount-30:(upperAmount+233)
             
             correctOption = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,
                                                         upperAmount,lowerAmount);
@@ -86,7 +82,7 @@
 
             // HTML for the comprehension check question
             let comprehensionQuestion = `
-                <div id='error-confirm' class='error-message'></div>
+                <div id='error-confirm' style='color:#11439e'></div>
                 <p>${comprehensionQuestionText}</p>
     
                 <input type="radio" name="comprehension" id="comprehend_1" value="${options[optionOrder[0]]}">
@@ -110,16 +106,11 @@
             // If the choice is not made, show the error message  
             returnError(error_intertemporalChoice);
 
-            if(clickedConfirm && !showCheckQuestion && allChoicesChecked){
+            if(!showCheckQuestion && allChoicesChecked){
                 // If all required choices are made, record the new data 
                 newData = stimuli[currentIndex];
+                newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
 
-                if(currentRow <=maxRowNumber){
-                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
-                } else {
-                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?extendBreak:0);
-                }
-                
                 // load the comprehension check question 
                 let comprehensionCheckHTML = addCheckQuestion(newData);
                 $('#comprehension-check').html(comprehensionCheckHTML);

@@ -13,35 +13,41 @@
         <!-- Content will be created by Javascript -->
     </div>
     <div class="navigation-block">
+        <div id="qNumber"></div>
         <button id="nextButton">Next</button>
     </div>
 
     <script type="module">
 
-        import { lotteries } from "./stimuli-timeline.js"
+        import { lotteries,rand } from "./stimuli-timeline.js"
         const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
         var currentIndex = 0; 
         var data = {'task':'risky'};
         var choiceData = [];
         var endIteration, newData, loadTime;
+        var lotteryOrder = rand(lotteries.length,lotteries.length,participant_ID*888);
+        var configQuestion;
 
         function loadPage(index) {
 
-            let configQuestion = lotteries[index];
+            configQuestion = lotteries[lotteryOrder[index]];
+
             let riskyOutcome = configQuestion.outcome;
             let riskyProb = configQuestion.prob;
-            let optionAContent = `get £${riskyOutcome} with a ${riskyProb} chance`;
+
+            amountBreak = riskyOutcome/12;
+            amountList = optionAmounts(0);
+
+            let optionAContent = `get <span style=${dateColor}>£${riskyOutcome}</span> with a ${riskyProb} chance`;
             let optionBContent = certaintyOptions();
-            clickedConfirm = false;
 
             $('#content-container').html(intertemporalChoicePage);
-            $("#intertemporalQuestionContent").html(riskyQuestionText);
+            $("#intertemporalQuestionContent").html(intertemporalQuestionText);
             
             generatePriceList(optionAContent,optionBContent);
-            hideRowsInitial();
-            $('#priceListTable td')[0].style.width = '260px';
-            $('#priceListTable td')[2].style.width = '160px';
-            $('#qNumber').html('('+ (1+index) +"/"+ lotteries.length +')');
+            // $('#priceListTable td')[0].style.width = '260px';
+            // $('#priceListTable td')[2].style.width = '160px';
+            $('#qNumber').html('Progress: '+ Math.floor(1+index/lotteries.length) +"/"+ lotteries.length);
             loadTime = new Date().getTime();
         };
         
@@ -53,14 +59,11 @@
             // If the sub-choice is not made, show the error message
             returnError(error_intertemporalChoice);
         
-            if(allChoicesChecked && clickedConfirm){
+            if(allChoicesChecked){
                 // If all required choices are made, record the new data
-                newData = lotteries[currentIndex];
-                if(currentRow <=maxRowNumber){
-                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
-                } else {
-                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?extendBreak:0);
-                };
+                newData = configQuestion;
+                newData['present_order'] = currentIndex;
+                newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
                 newData['response_time_risky'] = new Date().getTime() - loadTime;
                 choiceData.push(newData);
                 
@@ -72,8 +75,8 @@
                 } else {
                     data['worker_id'] = jatos.workerId;
                     data['choice'] = choiceData;
-                    sessionStorage.clear();
-                    jatos.endStudy(data);     
+                    // sessionStorage.clear();
+                    jatos.startNextComponent(data);     
                 }
             }
         });

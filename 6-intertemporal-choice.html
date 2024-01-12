@@ -14,6 +14,7 @@
         <!-- Content will be created by Javascript -->
     </div>
     <div class="navigation-block">
+        <div id="qNumber"></div>
         <button id="nextButton">Next</button>
     </div>
 
@@ -22,14 +23,12 @@
         import { stimuliContext,drawStimuli,loadStimuli } from "./stimuli-timeline.js";
         const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
         const condition = 'front-align'
-        // const sessionCond = sessionStorage.getItem("sessionCond");
-        // const condition = (sessionCond === null)?"front-align":sessionCond;
         
-        var currentIndex = 0; // question index
-        var stimuli,pageName,pageLoadTime,firstChoiceTime; // "intertemporal-choice" or "confidence-check"
-        var data = {'task':'intertemporal','group':condition}
+        var currentIndex = 0; // task index
         var choiceData = [];
-        var frontAmount,backAmount,seqLength,currentCond,endIteration,newData;
+        var data = {'task':'intertemporal'}
+        var stimuli,pageName,endIteration,pageLoadTime; // "intertemporal-choice" or "confidence-check"
+        var configQuestion,frontAmount,backAmount,seqLength,currentCond,newData;
 
         // Under each condition, randomly draw stimuli from the full stimulus list
         if (condition === 'front-align'){
@@ -40,42 +39,37 @@
                                     stimuliContext.n);
         }
 
-        // if (participant_ID % 2 == 0){
-        //     stimuli = stimuliFront.concat(stimuliBack);
-        // } else {
-        //     stimuli = stimuliBack.concat(stimuliFront);
-        // }
 
         // Each intertemporal choice question is followed with a confidence check question
 
         function loadPage(index) {
 
-            let configQuestion = loadStimuli(stimuli,index);
-            
             pageName = pageIteration[index % pageIteration.length];
+            configQuestion = loadStimuli(stimuli,index);
             frontAmount = configQuestion.front_amount;
             backAmount = configQuestion.backend_amount;
             seqLength = configQuestion.seq_length;
             currentCond = configQuestion.condition;
-            clickedConfirm = false;
             
             if(pageName === "intertemporal-choice"){
+
+                amountList = optionAmounts(frontAmount - amountBreak);
 
                 let optionAContent = sequenceContent(frontAmount,backAmount,seqLength);
                 let optionBContent = intertemporalOptions(seqLength,currentCond);
 
                 $('#content-container').html(intertemporalChoicePage);
                 $("#intertemporalQuestionContent").html(intertemporalQuestionText);
-                $('#qNumber').html('('+ Math.floor(1+index/pageIteration.length) +"/"+ stimuli.length +')');
+                $('#qNumber').html('Progress: '+ Math.floor(1+index/pageIteration.length) +"/"+ stimuli.length);
                 
-                generatePriceList(optionAContent,optionBContent);
-                hideRowsInitial();
+                generatePriceList(optionAContent,optionBContent,amountList);
+                // hideRowsInitial();
                 
             } else if (pageName === "confidence-check"){
 
                 // get the elements for choice meaning text
                 let upperAmount = choiceData[choiceData.length-1].indiff_point;
-                let lowerAmount = (upperAmount > maxRowAmount)?(upperAmount - extendBreak):(upperAmount-amountBreak);
+                let lowerAmount = upperAmount-amountBreak;
                 let choiceMeaningText = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
                 let questionText = confidenceQuestionText + choiceMeaningText  + `?`;
 
@@ -102,21 +96,11 @@
                 // If the sub-choice is not made, show the error message
                 returnError(error_intertemporalChoice);
 
-                if(allChoicesChecked && !clickedConfirm){
-                    // If all required choices are made, record the new data
-                    newData = endIteration?"":loadStimuli(stimuli,currentIndex);
-                    firstChoiceTime = new Date().getTime();
-                }
-
-                if(allChoicesChecked && clickedConfirm){
+                if(allChoicesChecked){
                     // move to the confidence check question
-                    if(currentRow <=maxRowNumber){
-                        newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
-                    } else {
-                        newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?extendBreak:0);
-                    }
-                    newData['response_time_intertemporal_1'] = firstChoiceTime - pageLoadTime;
-                    newData['response_time_intertemporal_2'] = new Date().getTime() - firstChoiceTime;
+                    newData = configQuestion;
+                    newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
+                    newData['response_time_intertemporal'] = new Date().getTime() - pageLoadTime;
                     choiceData.push(newData);
                     currentIndex++;
                     loadPage(currentIndex);
@@ -149,6 +133,8 @@
         });
 
         loadPage(currentIndex);
+        
+
     </script>
 </body>
 </html>

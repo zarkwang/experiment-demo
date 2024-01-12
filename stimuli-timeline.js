@@ -3,19 +3,19 @@ import { rand,addCheckboxes } from "./lib/utils.js";
 
 
 const amount_frontVary = [
-    {"front_amount": 60, "backend_amount": 60},
+    // {"front_amount": 60, "backend_amount": 60},
     {"front_amount": 120, "backend_amount": 60},
-    {"front_amount": 180, "backend_amount": 60},
+    // {"front_amount": 180, "backend_amount": 60},
     {"front_amount": 240, "backend_amount": 60},
-    {"front_amount": 300, "backend_amount": 60},
+    // {"front_amount": 300, "backend_amount": 60},
     {"front_amount": 360, "backend_amount": 60},
-    {"front_amount": 420, "backend_amount": 60},
+    // {"front_amount": 420, "backend_amount": 60},
     {"front_amount": 480, "backend_amount": 60},
-    {"front_amount": 540, "backend_amount": 60},
+    // {"front_amount": 540, "backend_amount": 60},
     {"front_amount": 600, "backend_amount": 60},
-    {"front_amount": 660, "backend_amount": 60},
+    // {"front_amount": 660, "backend_amount": 60},
     {"front_amount": 720, "backend_amount": 60},
-    {"front_amount": 780, "backend_amount": 60},
+    // {"front_amount": 780, "backend_amount": 60},
     {"front_amount": 840, "backend_amount": 60},
     ]
 
@@ -39,7 +39,7 @@ const seqLengthList = ['6 months','12 months'];
 // possible stimuli in total: (8 + 8) * 2 = 32
 
 const stimuliContext = {
-    'n': 14, // number of stimuli
+    'n': 12, // number of stimuli
     'stimuli_frontAlign': fullStimuli('front-align',amount_frontVary,seqLengthList),
     'stimuli_backAlign': fullStimuli('back-align',amount_backVary,seqLengthList)
 }
@@ -96,9 +96,27 @@ const practiceStimuli = {
 }
 
 // Lotteris
-const lotteries = [{'outcome':300, 'prob':'50%'},
+const lotteries = [{'outcome':180, 'prob':'50%'},
+                   {'outcome':300, 'prob':'50%'},
                    {'outcome':600, 'prob':'50%'},
                    {'outcome':900, 'prob':'50%'},
 ]
 
-export {stimuliContext,practiceStimuli,lotteries,rand,drawStimuli,loadStimuli,addCheckboxes}
+const amount_frontVary_2 = [
+    {"front_amount": 80, "backend_amount": 70},
+    {"front_amount": 200, "backend_amount": 70},
+    {"front_amount": 360, "backend_amount": 70},
+    {"front_amount": 520, "backend_amount": 70},
+    {"front_amount": 640, "backend_amount": 70},
+    {"front_amount": 800, "backend_amount": 70},
+    {"front_amount": 960, "backend_amount": 70},
+    ]
+
+const seqLengthList_2 = ['8 months'];
+
+const stimuliContextForPair = {
+    'n': 6, // number of stimuli
+    'stimuli_frontAlign': fullStimuli('front-align',amount_frontVary_2,seqLengthList_2),
+}
+
+export {stimuliContext,stimuliContextForPair,practiceStimuli,lotteries,rand,drawStimuli,loadStimuli,addCheckboxes}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <div id="content-container">
+    <!-- Content will be created by Javascript -->
+  </div>
+  <div class="navigation-block">
+      <div id="qNumber"></div>
+      <button id="nextButton">Next</button>
+  </div>
+
+  <script type="module">
+    import { stimuliContextForPair,drawStimuli,loadStimuli } from "./stimuli-timeline.js";
+    const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
+    const condition = 'front-align'
+  
+    var currentIndex = 0; // task index
+    var choiceData = [];
+    var data = {'task':'pair'}
+    var endIteration,pageLoadTime,configQuestion;
+    var frontAmount, backAmount, seqLength, newData;
+
+     // Under each condition, randomly draw stimuli from the full stimulus list
+    const stimuli =  drawStimuli(stimuliContextForPair.stimuli_frontAlign,
+                                stimuliContextForPair.n);
+
+    function loadPage(index) {
+
+      configQuestion = loadStimuli(stimuli,index);
+      frontAmount = configQuestion.front_amount;
+      backAmount = configQuestion.backend_amount;
+      seqLength = configQuestion.seq_length;
+
+      $('#content-container').html(pairValueTime);
+      setpayoff_1(frontAmount);
+      setpayoff_2(backAmount,seqLength);
+      $('#qNumber').html('Progress: '+ (1+index) +"/"+ stimuli.length);
+      pageLoadTime = new Date().getTime();
+    }
+
+    
+
+    $("#nextButton").click(function() {
+      endIteration = (currentIndex + 1) === stimuli.length;
+      
+      var inputValue = $("#userAnswer").val();
+      var regex = /^[1-9]\d*$/;
+
+      if (!regex.test(inputValue)) {
+        $('#error-enter').text(error_enter)
+      } else{
+        newData = configQuestion;
+        newData['indiff_point'] = inputValue;
+        newData['response_time_enter'] = new Date().getTime() - pageLoadTime;
+        choiceData.push(newData);
+        console.log(choiceData);
+                
+        if (!endIteration){
+            currentIndex++;
+            loadPage(currentIndex);
+        } else {
+            data['worker_id'] = jatos.workerId;
+            data['choice'] = choiceData;
+            sessionStorage.clear();
+            jatos.endStudy(data);     
+        }
+      }
+    });
+
+    loadPage(currentIndex);
+
+    //  $('#payoff_1').mouseenter(function(){
+    //     setpayoff_1(payoff_1)
+    //     $('#payoff_1').css('background-color','white'); 
+    //     setTimeout(function() {
+    //       $('#payoff_1').html('amount 1');
+    //       $('#payoff_1').css('background-color','#d3d3d3');  
+    //     }, 1000);   
+    //  });
+
+    //  $('#payoff_2').mouseenter(function(){
+    //     setpayoff_2(payoff_2,delay)
+    //     $('#payoff_2').css('background-color','white'); 
+    //     setTimeout(function() {
+    //       $('#payoff_2').html('amount 2');
+    //       $('#payoff_2').css('background-color','#d3d3d3');  
+    //     }, 1000);   
+    //  });
+
+    //  $('#payoff_1').html('amount 1'); 
+    //  $('#payoff_2').html('amount 2');
+  </script>
+
+</body>
+</html>

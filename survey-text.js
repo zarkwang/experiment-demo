@@ -1,9 +1,10 @@
 
 // Consent Form
 const welcomeInfo = `
-<p>Thanks for your interest in the <span style="font-weight:bold">Money and Time Preference Study</span>.</p>
+<p>Thanks for your interest in the study of <span style="font-weight:bold">Preferences in Money, Time and Risk</span>.</p>
 
-<p>This study consists of 19 choice tasks and will take about 10 minutes to complete.
+<p>This study consists of 22 decision tasks. These tasks are divided into 3 parts. 
+It will take about 13 minutes to complete the whole study.  
 </p>
 
 <p>Please consider each task carefully and choose the options that truly reflect your preferences. 
@@ -33,15 +34,16 @@ const consentQuestion = [
 
 // Instruction
 const instructions_0 = `
+<h3> Instruction </h3>
 <p>
-In this study, tasks will be presented in tables.
+In this study, most tasks will be presented in tables.
 </p>
 
 <p>
 Each row of a table has two options - <span style='color:#2262c9'>Option A</span> and 
 <span style='color:#2262c9'>Option B</span>.
-These options offer different amounts of money at different points in time. 
-You should choose the option you prefer. 
+These options may offer different amounts of money at different points in time. 
+You should choose the option you prefer in each row. 
 </p>
 
 <p>
@@ -53,32 +55,12 @@ act in real-life situations and make choices based on that.
 In each task, you only need to click an option in the row where 
 you switch from choosing option A to choosing Option B.
 Choices on the rest of the rows will be completed automatically.
-You need to make such an active choice <span style='color:#2262c9'>twice</span> in a task. 
 </p>
 
 <p>
 This page contains an example task. Click "Continue" for details. 
 </p>
 `
-// const instructions_1 = `
-// <p>
-// <span style='color:#2262c9'>You do not have to click through all rows.</span> 
-// You only need to click an option in the row where you switch from choosing option B to choosing Option A.
-// </p>
-
-// <p>
-// Choices on the rest of the rows will be completed automatically.
-// </p>
-
-// <p>
-// After you have made a choice, some rows will unfold between the two rows where you switched your preference. 
-// You need to make another choice on the newly unfolded rows.
-// </p>
-
-// <p>
-// For details of the table, click "Continue".
-// </p>
-// `
 
 
 // Example with Tips
@@ -107,7 +89,8 @@ const finishChoiceText = 'This taks is completed. Click "Next" to proceed.'
 // Practice Tasks
 const trainIntro = `
 <p>
-Now, we would like you to complete a conprehension check task.
+This study consists of 3 parts. Before you start Part 1, 
+we would like you to complete a <span style='font-weight:bold'>conprehension check</span> task.
 </p>
 
 <p>
@@ -127,11 +110,10 @@ const comprehensionQuestionText = `
 // Intro to Intertemporal Choice Tasks
 const intertemporalIntro = `
 <p>
-The formal tasks will start from the next page.
+Now, you enter the Part 1 of this study. You will see 12 tasks in this part. 
 </p>
 
 <p>
-You will see 14 choice tasks. 
 Please think carefully about each task and choose the options that 
 <span style="font-weight:bold">truly reflect your preferences</span>. 
 </p>
@@ -145,7 +127,7 @@ example of this question (you can try it out yourself):
 <div id='confidenceExample'></div>
 
 <p>
-Please click "Next" to start the formal tasks.
+Please click "Next" to start Part 1.
 </p>
 `
 
@@ -158,7 +140,7 @@ const intertemporalChoicePage = `
         <thead>
             <tr>
                 <th>Option A</th>
-                <th>Choice</th>
+                <th>I prefer ______</th>
                 <th>Option B</th>
             </tr>
         </thead>
@@ -186,13 +168,6 @@ const confidenceCheckPage = `
 
 // Text for Intertemporal Choice Task
 const intertemporalQuestionText = `
-    <p id="notice">
-    <span style="font-weight: bold">Reminder:</span>
-    You only need to click an option in the row where you switch from choosing option A to choosing Option B. 
-    If you click Option A in a row, we assume you will choose Option A for any row above that row. 
-    If you click Option B in a row, we assume you will choose Option B for any row below that row.</p>
-    
-    <span id='qNumber'></span> Which option would you prefer in each row?
     <div id='error-choicelist' class='error-message'></div>
     `
 
@@ -209,37 +184,27 @@ const confidenceQuestionText = "How certain are you that you actually"
 // Intro to Risky Choices
 const riskyIntro = `
 <p>
-Before the study ends, please complete three additional choice tasks to help us understand how you feel about 
+In Part 2, there are 4 tasks about how you feel about 
 <span style='font-weight:bold'>taking risks</span>. 
 </p>
 
 <p>
-These tasks follow the same format as the previous tasks. 
-On each row, you can choose whether to get a small amount of money with certainty or 
-a large amount with some probability. 
+These tasks follow the same format as the previous tasks. However, on each row, 
+you should choose whether to get a large amount of money with some probability or 
+a small amount of money with certainty.
 </p>
 
 <p>
 Please select the options that truly reflect your preferences.
 </p>
 `
-// Risky Choice Question
-const riskyQuestionText = `
-    <p>
-    Imagine that you can get either a large amount of money with a 50% chance or 
-    a small amount of money with certainty.
-    </p>
-    
-    <span id='qNumber'></span> Which option would you prefer in each row?
-    <div id='error-risky' class='error-message'></div>
-    `
-
 
 // Error Message
 const error_consentForm = "* Please check all boxes if you agree to participate in this study."
 const error_intertemporalChoice = "* Please complete all choices before proceeding."
 const error_confirmCheck = `* Try your best to answering this question correctly, then click "Next".`
 const error_tips = "* Please read through the instructions."
+const error_enter = "* Please enter a number greater than 0."
 // const error_redoChoice = "* Please redo your choices before proceeding."
 
 
@@ -249,7 +214,7 @@ function choiceMeaning(frontAmount,backAmount,seqLength,condition,upperAmount,lo
     const itemStyle = "color:#c74040;display: inline-block;"
     const singeDate = (condition === 'front-align')?'today':`in ${seqLength}`;
 
-    if(upperAmount === 0){
+    if(upperAmount === amountList[0]){
         const choiceMeaningText = `
                 value <span style=${itemStyle}>£${frontAmount} today and £${backAmount} in ${seqLength}</span> 
                 somewhere below <span style=${itemStyle}>£${upperAmount} ${singeDate}</span>
@@ -334,3 +299,77 @@ function unfoldRange(upperAmount,lowerAmount,seqLength,condition){
 // }
 
 
+
+function setpayoff_1(payoff_1){
+    let setPayoff = `
+                    <span style='color:#11439e'>£${payoff_1}  today</span>
+    `
+
+    $('#payoff_1').html(setPayoff);
+
+}
+
+function setpayoff_2(payoff_2,delay){
+    let setPayoff = `
+                    <span style='color:#11439e'>£${payoff_2} in ${delay}</span>
+    `
+    $('#payoff_2').html(setPayoff);
+}
+
+
+const pairValueTime = `
+<p> Imagine that you have two options:</p>
+
+  <table id='pair-value-table'>
+    <tr>
+      <th>Option A</th>
+      <th>Option B</th>
+    </tr>
+    <tr>
+      <td>
+        <div id='optionA'>
+            receive  &nbsp;<span style='color:#11439e'>£X today</span>
+        </div>
+      </td>
+      <td>
+        <div id='optionB'>
+            receive<div id='payoff_1'></div> and <div id='payoff_2'></div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <p> What is the smallest amount for <span style='font-weight:bold'>X</span> that would make you 
+  prefer Option A at least as much as Option B? </p>
+  <p>Your answer: <input type="text" id="userAnswer" placeholder="Enter amount"></p>
+  <div id='error-enter' class='error-message'></div>
+`
+// <span style='color:#c4234c'>
+// 
+
+
+const enterIntro = `
+<p>
+Now, you enter the final part of the study.
+</p>
+
+<p>
+Part 3 contains 6 tasks. These tasks follow a different format from the previous tasks. 
+Below is an example task:
+</p>
+
+<div id='confidenceExample'></div>
+
+<p>
+In this example, you should enter an amount for <span style='font-weight:bold'>X</span> such that you value 
+<span style='font-weight:bold'>receive
+<span style='color:#11439e'>£X today</span></span> 
+and <span style='font-weight:bold'>receive
+<span style='color:#11439e'>£110 today</span> and 
+<span style='color:#11439e'>£90 in 5 months</span></span> equally.
+</p>
+
+<p>
+Please click "Next" to start Part 3.
+</p>
+`

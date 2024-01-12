@@ -29,15 +29,14 @@
         // const sessionCond = sessionStorage.getItem("sessionCond");
         // const condition = (sessionCond === null)?"front-align":sessionCond;
         const condition = 'front-align';
-        const configQuestion  = {"front_amount":120,
+        const configQuestion  = {"front_amount":70,
                                 "backend_amount": 60,
                                 "seq_length": "3 months",
                                 "condition": condition,
                                 };
         
         var data = {"task":"example"};       
-        var finishTips = false; 
-        var startTry = false;                   
+        var finishTips = false;                
         var frontAmount = configQuestion.front_amount;
         var backAmount = configQuestion.backend_amount;
         var seqLength = configQuestion.seq_length;
@@ -45,6 +44,8 @@
         var lowerAmount,upperAmount;
 
         function loadPage() {
+
+            amountList = optionAmounts(frontAmount - amountBreak);
 
             // Add tips (contained in popovers) and reminders
             let addIntro = `
@@ -65,20 +66,10 @@
             let optionBContent = intertemporalOptions(seqLength,currentCond);
             let optionAContent = sequenceContent(frontAmount,backAmount,seqLength);
 
-
             $('#content-container').html(exampleTipsPage);
             $("#intertemporalQuestionContent").html(intertemporalQuestionText);
             
             generatePriceList(optionAContent,optionBContent);
-            hideRowsInitial();
-            clickedConfirm = false;
-            // $('input[name^="choice_"]').prop('disabled', true);
-
-            // if(sessionCond === 'back-align'){
-            //     $('#step_3').css('transform','translateX(30px)');
-            //     $('#step_4').css('transform','translateX(30px)');
-            //     $('#step_5').css('transform','translateX(30px)');
-            // }
         };
 
 
@@ -103,45 +94,14 @@
             var checkedRadio = radios.filter(':checked');
             var choiceMeaningHTML,checkChoiceHTML;
             
-            if (startTry && !clickedConfirm) {
-                // If some buttons are clicked but the sub-choice has not been made
-                var rowBreak = amountBreak*toggleRowNumber;
-                if(currentRow < maxRowNumber){
-                    upperAmount = clickedAmount + (clickedOptionType === 'A'?rowBreak:0);
-                    lowerAmount = upperAmount - rowBreak;
-                    choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
-                } else{
-                    lowerAmount = amountList[maxRowNumber];
-                    upperAmount = lowerAmount + rowBreak;
-                    choiceMeaningHTML = `
-                        value <span style='color:#c74040;display: inline-block;'>
-                            £${frontAmount} today and £${backAmount} in ${seqLength}</span> 
-                        somewhere above <span style='color:#c74040;display: inline-block;'>
-                            £${lowerAmount} today</span>
-                        `
-                }
-                
-                checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + changeChoiceText 
-            } 
-            if (startTry && clickedConfirm){
-                // If all required choices are made
-                var rowBreak = (currentRow <=maxRowNumber)?amountBreak:extendBreak
-                upperAmount = clickedAmount + (clickedOptionType === 'A'?rowBreak:0)
-                lowerAmount = upperAmount - rowBreak
+            if (finishTips) {
+                upperAmount = clickedAmount + (clickedOptionType === 'A'?amountBreak:0);
+                lowerAmount = upperAmount - amountBreak;
                 choiceMeaningHTML = choiceMeaning(frontAmount,backAmount,seqLength,currentCond,upperAmount,lowerAmount);
-                checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + finishChoiceText 
-            }
-
-            if(startTry){
+                checkChoiceHTML = choiceIndicationText + choiceMeaningHTML + '.<br><br>' + changeChoiceText 
+           
                 $('#tryChoice').html(checkChoiceHTML);
             }
-
-                // if(lowerAmount < 0 || lowerAmount >= maxRowNumber*amountBreak){
-                //     $('#tryChoice').css("transform","translateY(200px)");
-                // } else {
-                //     $('#tryChoice').css("transform","translateY(0)");
-                // }
-            // }
         }
 
         loadPage();
@@ -156,9 +116,7 @@
             hideTip(4);
             $('#tryChoice').text(tryChoiceText).show();
             $('#maskRadioButtons').hide();
-            hideRowsInitial();
             finishTips = true;
-            startTry = true;
         });
 
         $('input[name^="choice_"]').on('click', checkChoices);
@@ -171,13 +129,8 @@
             } else{
                 returnError(error_intertemporalChoice);
             }
-
-            if(startTry && allChoicesChecked && !clickedConfirm){
-                var anotherChoiceText = unfoldRange(upperAmount,lowerAmount,seqLength,condition);
-                $('#tryChoice').html(anotherChoiceText);
-            }
             
-            if(startTry && allChoicesChecked && clickedConfirm){
+            if(finishTips && allChoicesChecked){
                 let newData = configQuestion;
                 newData["indiff_point"] = clickedAmount + (clickedOptionType === 'A'?0:amountBreak);
                 data['worker_id'] = jatos.workerId;

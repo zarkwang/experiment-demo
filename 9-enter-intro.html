@@ -1,0 +1,30 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="content-container">
+        <div id="instructionText" class="instruction"></div>
+    </div>
+    <div class="navigation-block">
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script>
+        // Load the intro to risky choice tasks
+        $('#instructionText').html(enterIntro);
+        $('#confidenceExample').html(pairValueTime);
+        setpayoff_1(110);
+        setpayoff_2(90,"5 months");
+
+        $('#nextButton').on('click', function () {
+            jatos.startNextComponent();
+        })
+    </script>
+</body>
+</html>

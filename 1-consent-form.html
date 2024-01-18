@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="jatos.js"></script>
     <script src="lib/jquery-1.11.1.min.js"></script>
-    <script src="survey-text.js"></script> 
+    <script src="lib/survey-text.js"></script> 
     <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -16,8 +16,9 @@
     <div class="navigation-block">
         <button id="nextButton">Next</button>
     </div>
+   
     <script type="module">
-        import {addCheckboxes} from './stimuli-timeline.js';
+        import {addCheckboxes} from './lib/utils.js';
         $('#welcomeInfo').html(welcomeInfo);
         addCheckboxes('consentBox',consentQuestion);
 
@@ -34,33 +35,6 @@
             }
         });
         
-        // var sessionCond;
-        // const seedWorkerID = Math.floor(new Date().getTime() / 1000);
-
-        // Check screen width
-        // var screenWidth = window.innerWidth;
-        // if(screenWidth <= 800){
-        //     var screenInfoHTML = screenInfo(screenWidth)
-        //     $('#content-container').css('width',screenWidth);
-        //     $('#content-container').html(screenInfoHTML);
-        //     $('#nextButton').hide();
-        // } else {
-            // Load the text for welcome information
-            // $('#welcomeInfo').html(welcomeInfo);
-            // Add checkboxes
-            // addCheckboxes('consentBox',consentQuestion);
-        // };
-
-        // for (var i=1; i<=100; i++){
-        //     var conditionNumber = Math.round(Math.random());
-        //     if (conditionNumber === 0){
-        //         sessionCond = 'front-align'
-        //         break;
-        //     } else if (conditionNumber === 1){
-        //         sessionCond = 'back-align'
-        //         break;
-        //     } 
-        // }
     </script>  
 </body>
 </html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/intertemporal-choice-list.js"></script> 
+    <script src="lib/survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+    <style data="slider-style" type="text/css"></style>
+</head>
+<body>
+
+  <div id="content-container">
+    <div id='question-block'></div>
+  </div>
+  <div class="navigation-block">
+      <button id="nextButton">Next</button>
+  </div>
+
+  <script type="module">
+    import {amountForCheck,seqLengthList} from "./stimuli-timeline.js";
+    const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
+    
+    var currentIndex = 0;
+    var choiceData = [];
+    var data = {'task':'choice-question'}
+    var pageLoadTime, endIteration, configQuestion;
+    var frontAmount, backAmount, singleAmount, seqLength, newData;
+
+    
+    let taskIndexList = Array.from(Array(amountForCheck.length).keys());
+    let taskOrder = taskIndexList.sort(function() { return Math.random() - 0.5; })
+
+    function loadPage(index) {
+
+      // Get the task's configuration 
+      configQuestion = amountForCheck[taskOrder[index]];
+      frontAmount = configQuestion.front_amount;
+      backAmount = configQuestion.backend_amount;
+      singleAmount = configQuestion.single_amount;
+
+      let i = Math.floor(Math.random() > 0.5)
+      seqLength = seqLengthList[i];
+
+
+      // Generate the sequence options
+      let payFrontEnd = `£${frontAmount} today`;
+      let payBackEnd = `£${backAmount} in ${seqLength}`
+      let payFrontEnd_X = `£${singleAmount} today`;
+      let payBackEnd_X = `£0 in ${seqLength}`
+
+      $('#question-block').html(consistencyPage);
+      $('#question-block').css('font-size','16px');
+
+      if(Math.random() > 0.5){
+        $('#payoff_a1').html(payFrontEnd)
+        $('#payoff_a2').html(payBackEnd)
+        
+        $('#payoff_b1').html(payFrontEnd_X)
+        $('#payoff_b2').html(payBackEnd_X)
+
+        $('#consistency_a').val('sequence')
+        $('#consistency_b').val('single')
+      } else {
+        $('#payoff_b1').html(payFrontEnd)
+        $('#payoff_b2').html(payBackEnd)
+   
+        $('#payoff_a1').html(payFrontEnd_X)
+        $('#payoff_a2').html(payBackEnd_X)
+
+        $('#consistency_b').val('sequence')
+        $('#consistency_a').val('single')
+      }
+
+      $('#qNumber').html('(Part 1: '+ (1+index) +"/"+ amountForCheck.length+') ' +error_next);
+
+      pageLoadTime = new Date().getTime();
+    }
+
+
+    // Press "enter" = click Next button
+    $(document).keypress(function(event) {
+            if (event.which === 13) {
+                $("#nextButton").click();
+            }
+    });
+    
+
+    $("#nextButton").click(function() {
+
+      endIteration = (currentIndex + 1) === amountForCheck.length;
+
+      let inputValue = $("input[name='consistency']:checked").val();
+
+      if (!inputValue) {
+        $('#error-enter').text(error_consistency)
+      } else{
+        newData = configQuestion;
+        newData['sequence_single_choice'] = inputValue;
+        newData['response_time_choice'] = new Date().getTime() - pageLoadTime;
+        choiceData.push(newData);
+        console.log(choiceData);
+
+        if(endIteration){
+          data['worker_id'] = jatos.workerId;
+          data["screen_width"] = window.innerWidth;
+          data['url'] = jatos.urlQueryParameters;
+          data['choice'] = choiceData;
+          // sessionStorage.setItem("choiceResults", choiceData)
+          jatos.startNextComponent(data);     
+        } else {
+          currentIndex++;
+          loadPage(currentIndex);
+        }
+      }
+    });
+
+    loadPage(currentIndex);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/survey-text.js"></script> 
+    <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
+    <style data="slider-style" type="text/css"></style>
+</head>
+<body>
+
+  <div id="content-container">
+    <div id="question-block"></div>
+  </div>
+  <div class="navigation-block">
+    <button id="nextButton">Next</button>
+  </div>
+
+  <script type="module">
+    import {drawnStimuli} from "./stimuli-timeline.js";
+    const participant_ID = (typeof jatos === "undefined")?9999:parseInt(jatos.workerId);
+  
+    var currentIndex = 0; // task index
+    var choiceData = [];
+    var data = {'task':'blank-filling'}
+    var endIteration,pageLoadTime,configQuestion;
+    var frontAmount, backAmount, seqLength, newData;
+
+    function loadPage(index) {
+
+      // Get the task's configuration 
+      configQuestion = drawnStimuli[index];
+      frontAmount = configQuestion.front_amount;
+      backAmount = configQuestion.backend_amount;
+      seqLength = configQuestion.seq_length;
+
+      // Present the task
+      $('#question-block').html(pairValueTime);
+      $('#payoff_a1').html(`£${frontAmount} today`);
+      $('#payoff_a2').html(`£${backAmount} in ${seqLength}`);
+      $('#payoff_b1').html(`£<span style='color:black'>X</span> today`);
+      $('#payoff_b2').html(`£0 in ${seqLength}`);
+      $('#qNumber').html('(Part 2: '+ (1+index) +"/"+ drawnStimuli.length+') '+error_next);
+      $("#userAnswer").focus();
+
+      // Change the color of Option A on each load (as a reminder of task switching) 
+      let normalColor = '#0c1e94';
+      let loadingColor = '#c74040';
+      let loadingDuration = 700;
+
+      $('#payoff_a1').css('color',normalColor)
+      $('#payoff_a2').css('color',normalColor)
+
+      if(index){
+        $('#payoff_a1').css('color',loadingColor)
+        $('#payoff_a2').css('color',loadingColor)
+        setTimeout(function(){
+          $('#payoff_a1').css('color',normalColor)
+          $('#payoff_a2').css('color',normalColor)
+        },loadingDuration)
+      }
+
+      // Record the timestamp when the page is loaded
+      pageLoadTime = new Date().getTime();
+    }
+
+    // Press "enter" = click Next button
+    $(document).keypress(function(event) {
+            if (event.which === 13) {
+                $("#nextButton").click();
+            }
+    });
+  
+
+    $("#nextButton").click(function() {
+
+      // Whether the current page is the end task
+      endIteration = (currentIndex + 1) === drawnStimuli.length;
+
+
+      let inputValue = $("#userAnswer").val();
+      let regex = /^[1-9]\d*$/;
+
+      if (!regex.test(inputValue)) {
+        // If the answer is not a positive number, return error message
+        $('#error-enter').text(error_enter)
+      } else{
+        // Record the data
+        newData = configQuestion;
+        newData['present_order'] = currentIndex;
+        newData['indiff_point'] = parseInt(inputValue);
+        newData['response_time_enter'] = new Date().getTime() - pageLoadTime;
+        choiceData.push(newData);
+        console.log(choiceData)
+
+        if(endIteration){
+        data['worker_id'] = jatos.workerId;
+        data['choice'] = choiceData;
+        jatos.endStudy(data);
+        sessionStorage.clear();   
+        } else {
+          // Go to the next task
+          currentIndex++;
+          loadPage(currentIndex);
+        }
+      }
+    });
+
+    loadPage(currentIndex);
+
+    //  $('#payoff_1').mouseenter(function(){
+    //     setpayoff_1(payoff_1)
+    //     $('#payoff_1').css('background-color','white'); 
+    //     setTimeout(function() {
+    //       $('#payoff_1').html('amount 1');
+    //       $('#payoff_1').css('background-color','#d3d3d3');  
+    //     }, 1000);   
+    //  });
+
+    //  $('#payoff_2').mouseenter(function(){
+    //     setpayoff_2(payoff_2,delay)
+    //     $('#payoff_2').css('background-color','white'); 
+    //     setTimeout(function() {
+    //       $('#payoff_2').html('amount 2');
+    //       $('#payoff_2').css('background-color','#d3d3d3');  
+    //     }, 1000);   
+    //  });
+
+    //  $('#payoff_1').html('amount 1'); 
+    //  $('#payoff_2').html('amount 2');
+  </script>
+
+</body>
+</html>

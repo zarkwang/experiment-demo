@@ -4,7 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="jatos.js"></script>
     <script src="lib/jquery-1.11.1.min.js"></script>
-    <script src="survey-text.js"></script> 
+    <script src="lib/intertemporal-choice-list.js"></script>
+    <script src="lib/survey-text.js"></script> 
     <link href="lib/element-style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -16,11 +17,17 @@
     </div>
 
     <script>
-        // Load the intro to training tasks
-        $('#instructionText').html(trainIntro);
+        // Load the intro to risky choice tasks
+        $('#instructionText').html(enterIntro);
+        $('#pairExample').html(pairValueTime);
+        $('#payoff_a1').html(`£90 today`);
+        $('#payoff_a2').html(`£90 in 7 months`);
+        $('#payoff_b1').html(`£<span style='color:black'>X</span> today`);
+        $('#payoff_b2').html(`£0 in 7 months`);
+       
 
         $('#nextButton').on('click', function () {
-            jatos.startNextComponent();
+                jatos.startNextComponent();
         })
     </script>
 </body>
